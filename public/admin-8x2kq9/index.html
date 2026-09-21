@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>後台管理 ｜ 企業服務申請系統</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --ink:#2b2620; --ink-soft:#5c554a; --paper:#faf7f1; --panel:#ffffff;
+    --line:#e4ddce; --accent:#1f6f5c; --accent-dark:#164f41; --accent-soft:#e4efe9;
+    --warn:#b5482e; --warn-soft:#f7e6e0; --gold:#b8873a; --radius:10px;
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--paper); color:var(--ink); line-height:1.6; }
+
+  /* ---- 登入畫面 ---- */
+  #login-screen{
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .login-box{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:36px 32px; max-width:340px; width:100%; text-align:center;
+  }
+  .login-box h1{ font-size:18px; color:var(--accent-dark); margin:0 0 6px; }
+  .login-box p{ font-size:12.5px; color:var(--ink-soft); margin:0 0 20px; }
+  .login-box input{
+    width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:7px;
+    font-size:14px; margin-bottom:12px; font-family:inherit;
+  }
+  .login-box button{
+    width:100%; border:none; background:var(--accent); color:#fff; padding:11px;
+    border-radius:7px; font-size:14px; font-weight:700; cursor:pointer;
+  }
+  .login-box button:hover{ background:var(--accent-dark); }
+  .login-err{ color:var(--warn); font-size:12.5px; margin-top:10px; min-height:16px; }
+
+  /* ---- 後台主畫面 ---- */
+  #admin-screen{ display:none; }
+  header.topbar{
+    background:var(--accent-dark); color:#fdf9f0; padding:16px 24px;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+  header.topbar h1{ font-size:16px; margin:0; }
+  header.topbar button{
+    background:transparent; border:1px solid rgba(255,255,255,.3); color:#fdf9f0;
+    padding:6px 14px; border-radius:99px; font-size:12.5px; cursor:pointer;
+  }
+  main{ max-width:1080px; margin:0 auto; padding:24px; }
+  .filter-bar{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+  .pill-btn{
+    border:1px solid var(--line); background:#fff; border-radius:99px; padding:7px 16px;
+    font-size:12.5px; cursor:pointer; color:var(--ink-soft);
+  }
+  .pill-btn.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
+  table{ width:100%; border-collapse:collapse; font-size:13px; background:#fff; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
+  th,td{ border-bottom:1px solid var(--line); padding:10px 10px; text-align:left; vertical-align:top; }
+  th{ background:#f4efe4; color:var(--ink-soft); font-size:12px; }
+  tr:last-child td{ border-bottom:none; }
+  tr:hover{ background:#fbf8f2; cursor:pointer; }
+  .tag{ display:inline-block; font-size:11px; padding:2px 9px; border-radius:99px; font-weight:700; }
+  .tag-coaching{ background:#e4efe9; color:#164f41; }
+  .tag-joint_recruitment{ background:#f3e9d4; color:#8a6417; }
+  .tag-job_matching{ background:#e6ecf7; color:#2c4a8c; }
+  .tag-work_experience{ background:#f7e6e0; color:#b5482e; }
+  .status-new{ font-weight:700; color:var(--warn); }
+  .status-handled{ color:#8a8578; }
+  .empty-state{ text-align:center; padding:50px 10px; color:#9b9384; }
+
+  /* ---- 詳細資料 modal ---- */
+  .modal-backdrop{
+    display:none; position:fixed; inset:0; background:rgba(43,38,32,.5); z-index:50;
+    align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-backdrop.show{ display:flex; }
+  .modal{
+    background:#fff; border-radius:var(--radius); padding:26px 28px; max-width:560px; width:100%;
+    max-height:85vh; overflow-y:auto;
+  }
+  .modal h2{ font-size:17px; color:var(--accent-dark); margin:0 0 4px; }
+  .modal .modal-sub{ font-size:12px; color:var(--ink-soft); margin-bottom:18px; }
+  .detail-line{ margin-bottom:12px; }
+  .detail-line .dl-label{ font-size:12px; font-weight:700; color:var(--ink-soft); }
+  .detail-line .dl-value{ font-size:14px; white-space:pre-wrap; padding:3px 0; }
+  .modal-actions{ display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
+  .btn{ border:none; border-radius:7px; padding:9px 16px; font-size:13px; font-weight:700; cursor:pointer; }
+  .btn-primary{ background:var(--accent); color:#fff; }
+  .btn-ghost{ background:#fff; color:var(--accent-dark); border:1px solid var(--accent); }
+  .btn-danger{ background:#fff; color:var(--warn); border:1px solid var(--warn); }
+</style>
+</head>
+<body>
+
+<!-- ===================== 登入畫面 ===================== -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>後台管理登入</h1>
+    <p>僅供服務據點管理者使用</p>
+    <input type="password" id="login-password" placeholder="請輸入管理者密碼">
+    <button id="btn-login">登入</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- ===================== 後台主畫面 ===================== -->
+<div id="admin-screen">
+  <header class="topbar">
+    <h1>企業服務申請 · 後台管理</h1>
+    <button id="btn-logout">登出</button>
+  </header>
+  <main>
+    <div class="filter-bar" id="service-filter">
+      <button class="pill-btn active" data-service="">全部服務</button>
+      <button class="pill-btn" data-service="coaching">企業入輔</button>
+      <button class="pill-btn" data-service="joint_recruitment">聯合徵才</button>
+      <button class="pill-btn" data-service="job_matching">即時求才媒合</button>
+      <button class="pill-btn" data-service="work_experience">職場體驗</button>
+    </div>
+    <div class="filter-bar" id="status-filter">
+      <button class="pill-btn active" data-status="">全部狀態</button>
+      <button class="pill-btn" data-status="new">尚未處理</button>
+      <button class="pill-btn" data-status="handled">已處理</button>
+    </div>
+    <div id="list-container"></div>
+  </main>
+</div>
+
+<!-- ===================== 詳細資料 Modal ===================== -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script>
+const SERVICE_LABELS = {
+  coaching: '企業入輔', joint_recruitment: '聯合徵才',
+  job_matching: '即時求才媒合', work_experience: '職場體驗'
+};
+let token = sessionStorage.getItem('admin_token') || '';
+let currentService = '';
+let currentStatus = '';
+let cachedRows = [];
+
+function showAdmin(){
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-screen').style.display = 'block';
+  loadList();
+}
+if(token) showAdmin();
+
+document.getElementById('btn-login').addEventListener('click', doLogin);
+document.getElementById('login-password').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+async function doLogin(){
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-err');
+  errEl.textContent = '';
+  try{
+    const res = await fetch('/api/admin/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password })
+    });
+    const body = await res.json();
+    if(!res.ok) throw new Error(body.error || '登入失敗');
+    token = body.token;
+    sessionStorage.setItem('admin_token', token);
+    showAdmin();
+  }catch(e){
+    errEl.textContent = e.message;
+  }
+}
+
+document.getElementById('btn-logout').addEventListener('click', ()=>{
+  sessionStorage.removeItem('admin_token');
+  token = '';
+  document.getElementById('admin-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-password').value = '';
+});
+
+document.getElementById('service-filter').addEventListener('click', e=>{
+  if(!e.target.matches('[data-service]')) return;
+  document.querySelectorAll('#service-filter .pill-btn').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+  currentService = e.target.dataset.service;
+  loadList();
+});
+document.getElementById('status-filter').addEventListener('click', e=>{
+  if(!e.target.matches('[data-status]')) return;
+  document.querySelectorAll('#status-filter .pill-btn').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+  currentStatus = e.target.dataset.status;
+  loadList();
+});
+
+async function loadList(){
+  const container = document.getElementById('list-container');
+  container.innerHTML = '<div class="empty-state">載入中...</div>';
+  const params = new URLSearchParams();
+  if(currentService) params.set('service', currentService);
+  if(currentStatus) params.set('status', currentStatus);
+  try{
+    const res = await fetch('/api/admin/submissions?' + params.toString(), {
+      headers:{ Authorization: 'Bearer ' + token }
+    });
+    if(res.status === 401){ handleLoggedOut(); return; }
+    const rows = await res.json();
+    if(!res.ok) throw new Error(rows.error || '讀取失敗');
+    cachedRows = rows;
+    renderList(rows);
+  }catch(e){
+    container.innerHTML = '<div class="empty-state">讀取失敗：' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+function handleLoggedOut(){
+  sessionStorage.removeItem('admin_token');
+  token = '';
+  document.getElementById('admin-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-err').textContent = '登入已逾期，請重新登入';
+}
+
+function renderList(rows){
+  const container = document.getElementById('list-container');
+  if(!rows.length){
+    container.innerHTML = '<div class="empty-state">目前沒有符合條件的申請資料</div>';
+    return;
+  }
+  let html = '<table><thead><tr><th>服務</th><th>公司名稱</th><th>聯絡窗口</th><th>電話</th><th>送出時間</th><th>狀態</th></tr></thead><tbody>';
+  rows.forEach(r=>{
+    const d = r.data || {};
+    const company = d.companyName || '';
+    const contact = d.contactName || d.ownerName || '';
+    const phone = d.contactPhone || '';
+    const time = new Date(r.created_at).toLocaleString('zh-TW', { hour12:false });
+    html += `<tr data-id="${r.id}">
+      <td><span class="tag tag-${r.service_type}">${SERVICE_LABELS[r.service_type] || r.service_type}</span></td>
+      <td>${escapeHtml(company)}</td>
+      <td>${escapeHtml(contact)}</td>
+      <td>${escapeHtml(phone)}</td>
+      <td>${time}</td>
+      <td class="status-${r.status}">${r.status === 'new' ? '尚未處理' : '已處理'}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+  container.querySelectorAll('tr[data-id]').forEach(tr=>{
+    tr.addEventListener('click', ()=> openDetail(tr.dataset.id));
+  });
+}
+
+function openDetail(id){
+  const row = cachedRows.find(r => String(r.id) === String(id));
+  if(!row) return;
+  const d = row.data || {};
+  const time = new Date(row.created_at).toLocaleString('zh-TW', { hour12:false });
+  const lines = Object.entries(d).map(([k, v])=>{
+    const value = Array.isArray(v) ? v.join('、') : (v || '（未填寫）');
+    return `<div class="detail-line"><div class="dl-label">${escapeHtml(k)}</div><div class="dl-value">${escapeHtml(String(value))}</div></div>`;
+  }).join('');
+  document.getElementById('modal-content').innerHTML = `
+    <h2>${SERVICE_LABELS[row.service_type] || row.service_type}</h2>
+    <div class="modal-sub">送出時間：${time}　｜　編號 #${row.id}</div>
+    ${lines}
+    <div class="modal-actions">
+      ${row.status === 'new'
+        ? `<button class="btn btn-primary" data-mark="handled" data-id="${row.id}">標記為已處理</button>`
+        : `<button class="btn btn-ghost" data-mark="new" data-id="${row.id}">標記為尚未處理</button>`}
+      <button class="btn btn-danger" data-delete="${row.id}">刪除這筆資料</button>
+      <button class="btn btn-ghost" id="btn-close-modal">關閉</button>
+    </div>
+  `;
+  document.getElementById('modal-backdrop').classList.add('show');
+}
+
+document.getElementById('modal-backdrop').addEventListener('click', async (e)=>{
+  if(e.target.id === 'modal-backdrop' || e.target.id === 'btn-close-modal'){
+    document.getElementById('modal-backdrop').classList.remove('show');
+    return;
+  }
+  if(e.target.matches('[data-mark]')){
+    const id = e.target.dataset.id;
+    const status = e.target.dataset.mark;
+    await fetch('/api/admin/submissions/' + id, {
+      method:'PATCH',
+      headers:{ 'Content-Type':'application/json', Authorization:'Bearer ' + token },
+      body: JSON.stringify({ status })
+    });
+    document.getElementById('modal-backdrop').classList.remove('show');
+    loadList();
+  }
+  if(e.target.matches('[data-delete]')){
+    if(!confirm('確定要永久刪除這筆申請資料嗎？此動作無法復原。')) return;
+    const id = e.target.dataset.delete;
+    await fetch('/api/admin/submissions/' + id, {
+      method:'DELETE',
+      headers:{ Authorization:'Bearer ' + token }
+    });
+    document.getElementById('modal-backdrop').classList.remove('show');
+    loadList();
+  }
+});
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+</script>
+</body>
+</html>
