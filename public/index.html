@@ -1,4 +1,84 @@
 <!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的網站</title>
+
+    <!-- 1. 這裡放 Loading 的 CSS 樣式 -->
+    <style>
+        /* 全螢幕遮罩 */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffffff; /* 畫面的背景顏色 */
+            z-index: 99999; /* 確保蓋在最上層 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: sans-serif;
+            transition: opacity 0.5s ease; /* 消失時的淡出特效 */
+        }
+
+        /* 轉圈圈動畫 */
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db; /* 轉圈圈的主顏色 */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* 提示文字 */
+        .loading-text {
+            margin-top: 20px;
+            color: #555555;
+            font-size: 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 2. 這裡放 Loading 的 HTML 結構（一定要放在 body 的最上方） -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <p class="loading-text">網站正在努力喚醒中，請稍候...</p>
+    </div>
+
+    <!-- 這裡是你原本網站的其他 HTML 內容 -->
+    <div id="app">
+        <h1>歡迎來到我的網站</h1>
+        <!-- 你的主內容... -->
+    </div>
+
+    <!-- 3. 這裡放 JavaScript，當網頁所有資源都載入完畢後，把 Loading 畫面關掉 -->
+    <script>
+        window.addEventListener('load', function () {
+            const loadingScreen = document.getElementById('loading-screen');
+            
+            // 加上淡出效果
+            loadingScreen.style.opacity = '0';
+            
+            // 動畫結束後徹底移除節點，避免擋到點擊事件
+            setTimeout(() => {
+                loadingScreen.remove();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
