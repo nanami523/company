@@ -1,289 +1,190 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 1. 這裡放 Loading 的 CSS 樣式 -->
-    <style>
-        /* 全螢幕遮罩 */
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #ffffff; /* 畫面的背景顏色 */
-            z-index: 99999; /* 確保蓋在最上層 */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-family: sans-serif;
-            transition: opacity 0.5s ease; /* 消失時的淡出特效 */
-        }
-
-        /* 轉圈圈動畫 */
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db; /* 轉圈圈的主顏色 */
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        /* 提示文字 */
-        .loading-text {
-            margin-top: 20px;
-            color: #555555;
-            font-size: 16px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- 2. 這裡放 Loading 的 HTML 結構（一定要放在 body 的最上方） -->
-    <div id="loading-screen">
-        <div class="spinner"></div>
-        <p class="loading-text">網站正在努力喚醒中，請稍候...</p>
-    </div>
-
-    <!-- 這裡是你原本網站的其他 HTML 內容 -->
-    <div id="app">
-              <!-- 你的主內容... -->
-    </div>
-
-    <!-- 3. 這裡放 JavaScript，當網頁所有資源都載入完畢後，把 Loading 畫面關掉 -->
-    <script>
-        window.addEventListener('load', function () {
-            const loadingScreen = document.getElementById('loading-screen');
-            
-            // 加上淡出效果
-            loadingScreen.style.opacity = '0';
-            
-            // 動畫結束後徹底移除節點，避免擋到點擊事件
-            setTimeout(() => {
-                loadingScreen.remove();
-            }, 500);
-        });
-    </script>
-</body>
-</html>
-
-<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>企業服務申請 ｜ 基隆市銀髮人才服務據點</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#2b2620;
-    --ink-soft:#5c554a;
-    --paper:#faf7f1;
-    --panel:#ffffff;
-    --line:#e4ddce;
-    --accent:#1f6f5c;
-    --accent-dark:#164f41;
-    --accent-soft:#e4efe9;
-    --warn:#b5482e;
-    --warn-soft:#f7e6e0;
-    --gold:#b8873a;
-    --gold-soft:#f3e9d4;
-    --radius:10px;
+    --navy:#164f41; --teal:#1f6f5c; --gold:#b8873a;
+    --cream:#faf7f1; --paper:#fffdf8; --panel:#ffffff;
+    --ink:#2b2620; --ink-soft:#5c554a; --line:#e4ddce;
+    --warn:#b5482e; --accent-soft:#e4efe9; --highlight:#fff3d6; --highlight-border:#e8b95a;
+    --radius:12px; --shadow:0 16px 42px rgba(22,79,65,.10);
     font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
-  body{
-    margin:0;
-    background:var(--paper);
-    color:var(--ink);
-    line-height:1.7;
-  }
-  h1,h2,h3{ font-family:"Noto Serif TC",serif; }
+  body{ margin:0; background:var(--cream); color:var(--ink); line-height:1.7; }
 
-  /* ===== 頁首 ===== */
   header.masthead{
-    background:var(--accent-dark);
-    color:#fdf9f0;
-    padding:14px 24px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    gap:10px;
-    position:sticky;
-    top:0;
-    z-index:30;
+    background:var(--navy); color:#fdf9f0; padding:14px 24px;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    position:sticky; top:0; z-index:30;
   }
-  header.masthead .brand{
-    display:flex; align-items:center; gap:10px;
-    font-size:15px; font-weight:700; letter-spacing:.5px;
-  }
-  header.masthead .brand .dot{
-    width:8px; height:8px; border-radius:50%; background:var(--gold);
-  }
+  header.masthead .brand{ display:flex; align-items:center; gap:10px; font-size:15px; font-weight:700; }
+  header.masthead .brand .dot{ width:8px; height:8px; border-radius:50%; background:var(--gold); }
   header.masthead nav{ display:flex; gap:4px; flex-wrap:wrap; }
   header.masthead nav button{
-    background:transparent; border:1px solid rgba(255,255,255,.25);
-    color:#fdf9f0; padding:7px 14px; border-radius:99px; font-size:13px; cursor:pointer;
+    background:transparent; border:1px solid rgba(255,255,255,.25); color:#fdf9f0;
+    padding:7px 14px; border-radius:99px; font-size:13px; cursor:pointer;
   }
-  header.masthead nav button.active{ background:var(--gold); border-color:var(--gold); color:#2b2620; font-weight:700; }
+  header.masthead nav button.active{ background:var(--gold); border-color:var(--gold); color:#26221c; font-weight:700; }
 
-  /* ===== 首頁 Hero ===== */
-  .hero{
-    max-width:960px; margin:0 auto; padding:56px 24px 20px;
-    text-align:center;
-  }
-  .hero .eyebrow{
-    color:var(--gold); font-weight:700; font-size:13px; letter-spacing:2px;
-  }
-  .hero h1{
-    font-size:32px; margin:10px 0 16px; color:var(--accent-dark); line-height:1.4;
-  }
-  .hero p.lead{
-    color:var(--ink-soft); font-size:15px; max-width:560px; margin:0 auto 8px;
-  }
+  .topbar{ height:6px; background:linear-gradient(90deg,var(--navy),var(--teal),var(--gold)); }
+  .wrap{ max-width:1100px; margin:0 auto; padding:0 24px; }
 
-  .service-grid{
-    max-width:960px; margin:32px auto 60px; padding:0 24px;
-    display:grid; grid-template-columns:1fr 1fr; gap:18px;
-  }
+  /* ===== Hero ===== */
+  .hero{ max-width:960px; margin:0 auto; padding:56px 24px 20px; text-align:center; }
+  .hero .eyebrow{ font-size:13px; letter-spacing:.18em; color:var(--teal); font-weight:800; }
+  .hero h1{ margin:12px 0 16px; font-size:clamp(26px,4.2vw,40px); line-height:1.4; color:var(--navy); font-weight:900; }
+  .hero p.lead{ color:var(--ink-soft); font-size:15px; max-width:600px; margin:0 auto 8px; }
+  .hero-image{ margin-top:28px; }
+  .hero-image img{ width:100%; max-width:900px; display:block; margin:0 auto; border-radius:16px; box-shadow:var(--shadow); }
+
+  .service-nav{ padding:26px 0 56px; background:var(--paper); }
+  .service-grid{ max-width:960px; margin:0 auto; padding:0 24px; display:grid; grid-template-columns:1fr 1fr; gap:18px; }
   @media (max-width:700px){ .service-grid{ grid-template-columns:1fr; } }
   .service-card{
-    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    border:1px solid var(--line); background:#fff; border-radius:var(--radius);
     padding:24px; text-align:left; cursor:pointer; transition:border-color .15s, transform .15s;
     display:flex; flex-direction:column; gap:8px;
   }
-  .service-card:hover{ border-color:var(--accent); transform:translateY(-2px); }
-  .service-card .tag{
-    display:inline-block; font-size:11px; font-weight:700; color:var(--accent-dark);
-    background:var(--accent-soft); padding:3px 10px; border-radius:99px; width:fit-content;
+  .service-card:hover{ border-color:var(--teal); transform:translateY(-2px); }
+  .service-card .badge{
+    display:inline-block; font-size:11px; font-weight:700; color:var(--navy);
+    background:var(--accent-soft); padding:3px 10px; border-radius:99px; width:fit-content; letter-spacing:.02em;
   }
-  .service-card h3{ margin:2px 0 0; font-size:19px; color:var(--ink); }
-  .service-card p{ margin:0; font-size:13px; color:var(--ink-soft); }
-  .service-card .go{ margin-top:8px; font-size:13px; color:var(--accent-dark); font-weight:700; }
+  .service-card strong{ margin:2px 0 0; font-size:19px; color:var(--ink); font-weight:700; }
+  .service-card span.desc{ margin:0; font-size:13px; color:var(--ink-soft); }
+  .service-card .go{ margin-top:4px; font-size:13px; color:var(--navy); font-weight:700; }
 
-  /* ===== 內文區塊 ===== */
-  main{ max-width:820px; margin:0 auto; padding:36px 24px 80px; }
+  .video-showcase{ padding:44px 0 10px; }
+  .video-showcase .section-heading{ text-align:center; margin-bottom:26px; }
+  .video-showcase .section-heading .eyebrow{ color:var(--gold); font-weight:800; font-size:13px; letter-spacing:.18em; }
+  .video-showcase .section-heading h2{ color:var(--navy); font-size:26px; margin:8px 0 6px; }
+  .video-showcase .section-heading p{ color:var(--ink-soft); font-size:14.5px; margin:0; }
+  .video-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  @media (max-width:900px){ .video-grid{ grid-template-columns:1fr; max-width:640px; margin:0 auto; } }
+  .video-card{ background:#fff; border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column; }
+  .video-box{ position:relative; width:100%; aspect-ratio:16/9; background:#000; }
+  .video-box video{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#000; }
+  .video-card-body{ padding:16px 18px 18px; }
+  .video-card-body .vc-tag{ font-size:11px; font-weight:800; color:var(--teal); letter-spacing:.08em; }
+  .video-card-body h3{ margin:6px 0 6px; font-size:16.5px; color:var(--navy); }
+  .video-card-body p{ margin:0 0 12px; font-size:13px; color:var(--ink-soft); }
+  .video-card-body .vc-link{ display:inline-flex; align-items:center; gap:4px; font-size:13.5px; font-weight:700; color:var(--navy); background:none; border:none; cursor:pointer; padding:0; }
+  .video-card-body .vc-link:hover{ color:var(--teal); }
+
+  main{ max-width:820px; margin:0 auto; padding:44px 24px 80px; }
   .tab-panel{ display:none; }
   .tab-panel.active{ display:block; }
-  .service-intro{ margin-bottom:26px; }
-  .service-intro .eyebrow{ color:var(--gold); font-weight:700; font-size:12px; letter-spacing:2px; }
-  .service-intro h2{ font-size:26px; color:var(--accent-dark); margin:8px 0 12px; }
+  .service-intro{ margin-bottom:20px; }
+  .service-intro .eyebrow{ color:var(--gold); font-weight:800; font-size:12px; letter-spacing:.15em; }
+  .service-intro h2{ font-size:26px; color:var(--navy); margin:8px 0 12px; }
   .service-intro p{ color:var(--ink-soft); font-size:14.5px; }
-  .back-link{
-    background:none; border:none; color:var(--ink-soft); font-size:13px; cursor:pointer;
-    padding:0; margin-bottom:18px; display:inline-flex; align-items:center; gap:4px;
-  }
-  .back-link:hover{ color:var(--accent-dark); }
+  .back-link{ background:none; border:none; color:var(--ink-soft); font-size:13px; cursor:pointer; padding:0; margin-bottom:18px; display:inline-flex; align-items:center; gap:4px; }
+  .back-link:hover{ color:var(--navy); }
 
-  .info-box{
-    background:var(--accent-soft); border:1px solid #cfe2d9; border-radius:var(--radius);
-    padding:16px 18px; font-size:13.5px; color:var(--ink); margin-bottom:22px; line-height:1.8;
+  .info-box{ background:var(--accent-soft); border:1px solid #cfe2df; border-radius:var(--radius); padding:16px 18px; font-size:13.5px; color:var(--ink); margin-bottom:22px; line-height:1.8; }
+  .info-box b{ color:var(--navy); }
+
+  /* 表單頁上的常駐 LINE 提醒（送出前也能看到） */
+  .line-reminder{
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap; background:#f4f9f7; border:1px solid #cfe2df;
+    border-radius:var(--radius); padding:16px 18px; margin-bottom:22px;
   }
-  .info-box b{ color:var(--accent-dark); }
-  .note-box{
-    background:var(--gold-soft); border:1px dashed var(--gold); border-radius:var(--radius);
-    padding:14px 18px; font-size:13.5px; color:var(--ink); margin-bottom:22px;
+  .line-reminder img{ width:84px; height:84px; border-radius:6px; border:1px solid var(--line); background:#fff; flex-shrink:0; }
+  .line-reminder .lr-text{ flex:1; min-width:200px; }
+  .line-reminder .lr-title{ font-weight:700; color:var(--navy); font-size:14px; margin-bottom:4px; }
+  .line-reminder .lr-title a{ color:var(--teal); }
+  .highlight-note{
+    background:var(--highlight); border:1px solid var(--highlight-border); border-radius:8px;
+    padding:8px 12px; font-size:12.5px; color:#7a4c0a; font-weight:700; margin-top:8px; display:inline-block;
   }
 
-  .video-frame{
-    position:relative; width:100%; padding-top:56.25%; margin-bottom:22px;
-    border-radius:var(--radius); overflow:hidden; background:#000; border:1px solid var(--line);
-  }
-  .video-frame iframe{
-    position:absolute; top:0; left:0; width:100%; height:100%; border:0;
-  }
-  .video-frame-local{ padding-top:0; background:#000; }
-  .video-frame-local video{
-    display:block; width:100%; max-height:480px; background:#000;
-  }
-  .video-caption{ font-size:12px; color:var(--ink-soft); margin:-14px 0 22px; }
-
-  .panel{
-    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
-    padding:24px; margin-bottom:20px;
-  }
-  .section-label{
-    font-size:12px; letter-spacing:1px; color:var(--gold); font-weight:700;
-    margin:24px 0 10px; text-transform:uppercase;
-  }
+  .panel{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:26px; margin-bottom:20px; box-shadow:var(--shadow); }
+  .section-label{ font-size:12px; letter-spacing:1px; color:var(--gold); font-weight:800; margin:24px 0 10px; text-transform:uppercase; }
   .section-label:first-child{ margin-top:0; }
   .field{ margin-bottom:16px; }
   .field label{ display:block; font-size:13.5px; font-weight:700; margin-bottom:6px; color:var(--ink); }
-  .field label .opt{ font-weight:400; color:#9b9384; font-size:12px; margin-left:4px; }
-  .field input[type=text], .field input[type=tel], .field textarea{
-    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:7px;
-    font-size:14px; font-family:inherit; background:#fffdf9;
+  .field label .opt{ font-weight:400; color:#9aa3a6; font-size:12px; margin-left:4px; }
+  .field input[type=text], .field input[type=tel], .field input[type=email], .field textarea, .field select{
+    width:100%; padding:10px 12px; border:1px solid #ccd6d4; border-radius:9px; font-size:14px; font-family:inherit; background:#fff;
   }
-  .field input:focus, .field textarea:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(31,111,92,.14); }
   .field textarea{ resize:vertical; min-height:80px; }
+  .field textarea.tall{ min-height:120px; }
   .row2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  @media (max-width:600px){ .row2{ grid-template-columns:1fr; } }
+  .row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+  @media (max-width:600px){ .row2, .row3{ grid-template-columns:1fr; } }
 
   .checkbox-list{ display:flex; flex-direction:column; gap:9px; }
-  .checkbox-list label{
-    display:flex; align-items:flex-start; gap:9px; font-size:14px; font-weight:400;
-    padding:10px 12px; border:1px solid var(--line); border-radius:7px; cursor:pointer; background:#fffdf9;
-  }
-  .checkbox-list label:has(input:checked){ border-color:var(--accent); background:var(--accent-soft); }
-  .checkbox-list input{ margin-top:3px; }
+  .checkbox-list label{ display:flex; align-items:flex-start; gap:9px; font-size:14px; font-weight:400; padding:10px 12px; border:1px solid #d7e0de; border-radius:9px; cursor:pointer; background:#fbfcfa; }
+  .checkbox-list label:has(input:checked){ border-color:var(--teal); background:var(--accent-soft); }
+  .checkbox-list input{ margin-top:3px; accent-color:var(--teal); }
 
   .radio-cards{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:6px;}
   @media (max-width:600px){ .radio-cards{ grid-template-columns:1fr; } }
-  .radio-cards label{
-    border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; cursor:pointer; background:#fffdf9;
-  }
-  .radio-cards label:has(input:checked){ border-color:var(--accent); background:var(--accent-soft); }
-  .radio-cards label .rt{ font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px; }
+  .radio-cards label{ border:1px solid #d7e0de; border-radius:12px; padding:14px 16px; cursor:pointer; background:#fbfcfa; }
+  .radio-cards label:has(input:checked){ border-color:var(--teal); background:var(--accent-soft); box-shadow:0 0 0 2px rgba(31,111,92,.12); }
+  .radio-cards label .rt{ font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px; color:var(--navy); }
   .radio-cards label .rd{ font-size:12.5px; color:var(--ink-soft); margin-top:4px; }
 
-  button.btn{ border:none; border-radius:7px; padding:11px 20px; font-size:14px; font-weight:700; cursor:pointer; }
-  .btn-primary{ background:var(--accent); color:#fff; }
-  .btn-primary:hover{ background:var(--accent-dark); }
-  .btn-ghost{ background:#fff; color:var(--accent-dark); border:1px solid var(--accent); }
+  .simple-check{ display:flex; align-items:flex-start; gap:8px; font-size:13.5px; padding:9px 0; }
+  .simple-check input{ margin-top:3px; accent-color:var(--teal); }
+  .simple-check .sc-label{ font-weight:700; color:var(--ink); }
+  .simple-check .sc-sub{ font-size:12px; color:var(--ink-soft); display:block; }
+
+  .job-entry{ border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:18px; background:#fdfcf9; position:relative; }
+  .job-entry-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .job-entry-head .je-title{ font-weight:800; color:var(--navy); font-size:15px; }
+  .je-remove{ background:none; border:none; color:var(--warn); font-size:12.5px; cursor:pointer; font-weight:700; }
+  .loc-block{ border-top:1px dashed var(--line); padding-top:12px; margin-top:12px; }
+  .loc-block .loc-label{ font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-bottom:8px; }
+  .add-job-btn{ width:100%; border:2px dashed var(--teal); background:#fff; color:var(--teal); border-radius:12px; padding:13px; font-size:14px; font-weight:800; cursor:pointer; margin-bottom:20px; }
+  .add-job-btn:hover{ background:var(--accent-soft); }
+
+  button.btn{ border:none; border-radius:9px; padding:11px 20px; font-size:14px; font-weight:800; cursor:pointer; }
+  .btn-primary{ background:var(--navy); color:#fff; }
+  .btn-primary:hover{ background:#0f3729; }
+  .btn-ghost{ background:#fff; color:var(--navy); border:1px solid var(--navy); }
   .actions-bar{ display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
   .form-msg{ margin-top:12px; font-size:13px; color:var(--warn); }
 
   .preview-line{ margin-bottom:12px; }
   .preview-line .pl-label{ font-size:12px; font-weight:700; color:var(--ink-soft); }
   .preview-line .pl-value{ font-size:14.5px; white-space:pre-wrap; padding:4px 0; }
+  .preview-job{ border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:14px; background:#fbfcfa; }
+  .preview-job .pj-title{ font-weight:800; color:var(--navy); margin-bottom:8px; }
 
   .thanks{ text-align:center; padding:10px 4px 4px; }
-  .thanks .check{
-    width:52px; height:52px; border-radius:50%; background:var(--accent-soft); color:var(--accent-dark);
-    display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 16px;
-  }
-  .thanks h3{ font-size:21px; color:var(--accent-dark); margin:0 0 10px; }
-  .thanks p{ color:var(--ink-soft); font-size:14px; margin:0 0 22px; }
-  .line-box{
-    display:flex; align-items:center; gap:18px; justify-content:center; flex-wrap:wrap;
-    background:#f4f9f2; border:1px solid #cfe2d9; border-radius:var(--radius); padding:22px; margin-bottom:22px;
-  }
+  .thanks .check{ width:52px; height:52px; border-radius:50%; background:var(--accent-soft); color:var(--navy); display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 16px; }
+  .thanks h3{ font-size:21px; color:var(--navy); margin:0 0 10px; }
+  .thanks p{ color:var(--ink-soft); font-size:14px; margin:0 0 18px; }
+  .line-box{ display:flex; align-items:center; gap:18px; justify-content:center; flex-wrap:wrap; background:#f4f9f7; border:1px solid #cfe2df; border-radius:var(--radius); padding:22px; margin-bottom:22px; }
   .line-box img{ width:132px; height:132px; border-radius:8px; border:1px solid var(--line); background:#fff; }
   .line-box .lb-text{ text-align:left; }
-  .line-box .lb-text .lb-title{ font-weight:700; color:var(--accent-dark); font-size:15px; margin-bottom:6px; }
-  .line-box .lb-text a{ color:var(--accent); font-weight:700; }
-  .contact-footer{
-    font-size:13px; color:var(--ink-soft); border-top:1px solid var(--line); padding-top:16px; line-height:2;
-  }
-  .btn-restart{ margin-top:18px; }
+  .line-box .lb-text .lb-title{ font-weight:700; color:var(--navy); font-size:15px; margin-bottom:6px; }
+  .line-box .lb-text a{ color:var(--teal); font-weight:700; }
+  .contact-footer{ font-size:13px; color:var(--ink-soft); border-top:1px solid var(--line); padding-top:16px; line-height:2; }
+  .btn-restart{ margin-top:8px; }
+  .thanks-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
 
-  footer.site-footer{
-    text-align:center; font-size:12px; color:#a39a88; padding:30px 20px 50px;
-  }
+  footer.site-footer{ background:var(--navy); color:#fff; padding:30px 0; margin-top:20px; }
+  .footer-grid{ display:grid; grid-template-columns:1.4fr 1fr 150px; gap:28px; align-items:center; }
+  @media (max-width:800px){ .footer-grid{ grid-template-columns:1fr; text-align:center; } }
+  .footer-grid h3{ margin:0 0 5px; font-size:19px; }
+  .footer-grid p{ margin:3px 0; color:#dce8e0; font-size:13.5px; }
+  .footer-grid .phone-num{ font-size:21px; font-weight:800; color:#fff; }
+  .footer-qr{ background:#fff; padding:8px; border-radius:10px; width:130px; height:130px; margin:0 auto; }
+  @media (max-width:800px){ .footer-qr{ margin:8px auto 0; } }
 </style>
 </head>
 <body>
+<div class="topbar"></div>
 
 <header class="masthead">
   <div class="brand"><span class="dot"></span> 基隆市銀髮人才服務據點 · 企業服務申請</div>
@@ -299,34 +200,79 @@
 <!-- ===================== 首頁 ===================== -->
 <section id="tab-home" class="tab-panel active">
   <div class="hero">
-    <div class="eyebrow">企業服務申請專區</div>
-    <h1>四項免費企業服務，線上填寫，我們與您聯繫</h1>
-    <p class="lead">不論是想申請免費的專家入場輔導、參加聯合徵才、刊登急徵職缺，或是想開放職場讓民眾體驗，都可以在這裡線上完成申請，我們的專員會盡快與您聯繫。</p>
+    <div class="eyebrow">ENTERPRISE SERVICE ｜ 企業服務專區</div>
+    <h1>企業夥伴，缺工與管理問題，<br>我們一起想辦法。</h1>
+    <p class="lead">從人才招募、求才媒合，到人資制度與職場體驗，基隆市銀髮人才服務據點提供企業免費、實用的就業服務資源。</p>
+    <div class="hero-image">
+      <img src="hero-banner.jpg" alt="企業夥伴，缺工總是找不到人才嗎？我們陪你一起解決！" loading="lazy">
+    </div>
   </div>
-  <div class="service-grid">
-    <div class="service-card" data-goto="coaching">
-      <span class="tag">免費 · 勞動部方案</span>
-      <h3>企業入輔</h3>
-      <p>專家入場輔導，協助人資制度、薪酬績效、缺工解方、世代溝通等九大主題。</p>
-      <span class="go">開始申請 →</span>
+
+  <div class="service-nav">
+    <div class="service-grid">
+      <div class="service-card" data-goto="coaching">
+        <span class="badge">免費 · 勞動部方案</span>
+        <strong>企業入輔</strong>
+        <span class="desc">專家入場輔導，協助人資制度、薪酬績效、缺工解方、世代溝通等九大主題。</span>
+        <span class="go">開始申請 →</span>
+      </div>
+      <div class="service-card" data-goto="joint_recruitment">
+        <span class="badge">免費場地 · 形象加分</span>
+        <strong>聯合徵才</strong>
+        <span class="desc">小型或大型聯合徵才活動，免費場地與宣傳，現場一對一面試由據點協助處理。</span>
+        <span class="go">開始申請 →</span>
+      </div>
+      <div class="service-card" data-goto="job_matching">
+        <span class="badge">快速上架</span>
+        <strong>即時求才媒合</strong>
+        <span class="desc">留下職缺需求，免費協助上架至台灣就業通及據點宣傳平台。</span>
+        <span class="go">開始申請 →</span>
+      </div>
+      <div class="service-card" data-goto="work_experience">
+        <span class="badge">社會形象 · 免費保險</span>
+        <strong>職場體驗</strong>
+        <span class="desc">開放場地與講師，讓有求職意願的民眾認識產業與工作內容，交通與保險由據點安排。</span>
+        <span class="go">開始申請 →</span>
+      </div>
     </div>
-    <div class="service-card" data-goto="joint_recruitment">
-      <span class="tag">免費場地 · 形象加分</span>
-      <h3>聯合徵才</h3>
-      <p>小型或大型聯合徵才活動，免費場地與宣傳，現場一對一面試由據點協助處理。</p>
-      <span class="go">開始申請 →</span>
-    </div>
-    <div class="service-card" data-goto="job_matching">
-      <span class="tag">快速上架</span>
-      <h3>即時求才媒合</h3>
-      <p>留下職缺需求，免費協助上架至台灣就業通及據點宣傳平台。</p>
-      <span class="go">開始申請 →</span>
-    </div>
-    <div class="service-card" data-goto="work_experience">
-      <span class="tag">社會形象 · 免費保險</span>
-      <h3>職場體驗</h3>
-      <p>開放場地與講師，讓有求職意願的民眾認識產業與工作內容，交通與保險由據點安排。</p>
-      <span class="go">開始申請 →</span>
+  </div>
+
+  <div class="video-showcase">
+    <div class="wrap">
+      <div class="section-heading">
+        <div class="eyebrow">WATCH ｜ 精彩片段搶先看</div>
+        <h2>看看我們的活動花絮</h2>
+        <p>點開影片先睹為快，喜歡的話直接點進去申請就可以了</p>
+      </div>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-box"><video controls preload="metadata" src="job-t.mp4">您的瀏覽器不支援影片播放。</video></div>
+          <div class="video-card-body">
+            <div class="vc-tag">聯合徵才活動</div>
+            <h3>徵才活動花絮</h3>
+            <p>免費場地、一對一面試協助，現場活動實況紀錄。</p>
+            <button type="button" class="vc-link" data-goto="joint_recruitment">前往申請聯合徵才 →</button>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-box"><video controls preload="metadata" src="job-fb.mp4">您的瀏覽器不支援影片播放。</video></div>
+          <div class="video-card-body">
+            <div class="vc-tag">大型聯合徵才</div>
+            <h3>大型徵才相關新聞</h3>
+            <p>一年一度大型活動新聞畫面，本年度已圓滿落幕，可預約明年度。</p>
+            <button type="button" class="vc-link" data-goto="joint_recruitment">前往申請聯合徵才 →</button>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-box"><video controls preload="metadata" src="job-f.mp4">您的瀏覽器不支援影片播放。</video></div>
+          <div class="video-card-body">
+            <div class="vc-tag">職場體驗</div>
+            <h3>職場體驗介紹影片</h3>
+            <p>由企業提供場地及講師，募集有求職意願的民眾參訪認識產業。</p>
+            <button type="button" class="vc-link" data-goto="work_experience">前往申請職場體驗 →</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -342,6 +288,14 @@
     <p>由專家實地入場，協助企業導入人力資源相關制度與解方。<b>申請本項服務需具備營業登記。</b></p>
   </div>
 
+  <div class="line-reminder">
+    <img class="lr-qr" alt="官方 LINE QR Code">
+    <div class="lr-text">
+      <div class="lr-title">送出前也歡迎先加入官方 LINE：<a href="https://lin.ee/59fVmBR" target="_blank" rel="noopener">https://lin.ee/59fVmBR</a></div>
+      <span class="highlight-note">加入後請第一時間傳訊息或貼圖給我們，我們才看得到您並能為您服務</span>
+    </div>
+  </div>
+
   <div id="coaching-form-wrap">
   <form id="form-coaching" class="panel" data-service="coaching" novalidate>
     <div class="section-label">公司資料</div>
@@ -355,8 +309,9 @@
     </div>
     <div class="row2">
       <div class="field"><label>聯絡電話</label><input type="tel" required data-field="contactPhone" data-label="聯絡電話"></div>
-      <div class="field"><label>聯絡地址</label><input type="text" required data-field="companyAddress" data-label="聯絡地址"></div>
+      <div class="field"><label>電子信箱 E-mail</label><input type="email" required data-field="companyEmail" data-label="電子信箱"></div>
     </div>
+    <div class="field"><label>聯絡地址</label><input type="text" required data-field="companyAddress" data-label="聯絡地址"></div>
 
     <div class="section-label">想入輔的內容（可複選）</div>
     <div class="field">
@@ -394,7 +349,7 @@
 
   <div class="info-box">
     <b>地點｜</b>基隆市銀髮人才服務據點（基隆市仁愛區愛三路9號3樓）<br>
-    <b>上班時間｜</b>周一至五 08:30-12:30、13:30-17:30（國定與例假日休）
+    <b>上班時間｜</b>週一至五 08:30–12:30、13:30–17:30（國定與例假日休）
   </div>
 </section>
 
@@ -405,6 +360,14 @@
     <div class="eyebrow">免費場地 · 現場一對一面試</div>
     <h2>聯合徵才</h2>
     <p>提供免費場地供企業徵才，同時協助活動宣傳，對企業形象也有加分效果。活動現場會安排一對一面試，履歷收件與面試流程皆由本據點協助完成，公司僅需派員到場面試即可。當日並提供廠商餐盒與感謝狀，以表達謝意。</p>
+  </div>
+
+  <div class="line-reminder">
+    <img class="lr-qr" alt="官方 LINE QR Code">
+    <div class="lr-text">
+      <div class="lr-title">送出前也歡迎先加入官方 LINE：<a href="https://lin.ee/59fVmBR" target="_blank" rel="noopener">https://lin.ee/59fVmBR</a></div>
+      <span class="highlight-note">加入後請第一時間傳訊息或貼圖給我們，我們才看得到您並能為您服務</span>
+    </div>
   </div>
 
   <div id="joint-form-wrap">
@@ -424,15 +387,8 @@
     </div>
     <div class="form-msg" data-group-msg="eventType" style="display:none;">請選擇活動類型</div>
 
-    <div id="joint-video-small" class="video-block" style="display:none;">
-      <div class="section-label">小型徵才活動花絮</div>
-      <div class="video-frame video-frame-local"><video controls preload="metadata" src="job-f.mp4">您的瀏覽器不支援影片播放，請直接聯繫我們索取花絮影片。</video></div>
-    </div>
-    <div id="joint-video-large" class="video-block" style="display:none;">
-      <div class="section-label">2026 年大型徵才活動花絮</div>
-      <div class="video-frame"><iframe src="https://www.youtube.com/embed/7DBq5cwknso" allowfullscreen></iframe></div>
-      <div class="video-caption">影片如果沒有顯示，<a href="https://youtu.be/7DBq5cwknso" target="_blank" rel="noopener">點此直接在 YouTube 觀看</a></div>
-    </div>
+    <div class="section-label">活動花絮回顧</div>
+    <div class="video-box" style="border-radius:12px;margin-bottom:20px;"><video controls preload="metadata" src="job-t.mp4">您的瀏覽器不支援影片播放。</video></div>
 
     <div class="section-label">廠商資料</div>
     <div class="row2">
@@ -445,8 +401,9 @@
     </div>
     <div class="row2">
       <div class="field"><label>聯絡電話</label><input type="tel" required data-field="contactPhone" data-label="聯絡電話"></div>
-      <div class="field"><label>聯絡地址</label><input type="text" required data-field="companyAddress" data-label="聯絡地址"></div>
+      <div class="field"><label>電子信箱 E-mail</label><input type="email" required data-field="companyEmail" data-label="電子信箱"></div>
     </div>
+    <div class="field"><label>聯絡地址</label><input type="text" required data-field="companyAddress" data-label="聯絡地址"></div>
     <div class="field">
       <label>需求月份及日期</label>
       <input type="text" required data-field="preferredDate" data-label="需求月份及日期" placeholder="例如：希望安排於明年 3 月">
@@ -469,7 +426,15 @@
   <div class="service-intro">
     <div class="eyebrow">快速上架</div>
     <h2>即時求才媒合</h2>
-    <p>如果您有即時找人的需求，請留下您的職缺資訊。我們可協助免費將職缺上架至台灣就業通，並運用據點的宣傳平台為您曝光。</p>
+    <p>如果您有即時找人的需求，請留下您的職缺資訊。我們可協助免費將職缺上架至台灣就業通，並運用據點的宣傳平台為您曝光。若有多個職缺需求，可點選「新增職缺」一次填寫。</p>
+  </div>
+
+  <div class="line-reminder">
+    <img class="lr-qr" alt="官方 LINE QR Code">
+    <div class="lr-text">
+      <div class="lr-title">送出前也歡迎先加入官方 LINE：<a href="https://lin.ee/59fVmBR" target="_blank" rel="noopener">https://lin.ee/59fVmBR</a></div>
+      <span class="highlight-note">加入後請第一時間傳訊息或貼圖給我們，我們才看得到您並能為您服務</span>
+    </div>
   </div>
 
   <div id="jobmatch-form-wrap">
@@ -485,25 +450,13 @@
     </div>
     <div class="row2">
       <div class="field"><label>聯絡電話</label><input type="tel" required data-field="contactPhone" data-label="聯絡電話"></div>
-      <div class="field"><label>公司地址</label><input type="text" required data-field="companyAddress" data-label="公司地址"></div>
+      <div class="field"><label>電子信箱 E-mail</label><input type="email" required data-field="companyEmail" data-label="電子信箱"></div>
     </div>
+    <div class="field"><label>公司地址</label><input type="text" required data-field="companyAddress" data-label="公司地址"></div>
 
     <div class="section-label">職缺內容</div>
-    <div class="row2">
-      <div class="field"><label>職稱</label><input type="text" required data-field="jobTitle" data-label="職稱"></div>
-      <div class="field"><label>需求人數</label><input type="text" required data-field="headcount" data-label="需求人數"></div>
-    </div>
-    <div class="field"><label>職缺說明</label><textarea required data-field="jobOpening" data-label="職缺說明" placeholder="這個職缺主要在做什麼"></textarea></div>
-    <div class="row2">
-      <div class="field"><label>學歷/資格 <span class="opt">(可不填)</span></label><input type="text" data-field="education" data-label="學歷/資格"></div>
-      <div class="field"><label>待遇</label><input type="text" required data-field="salary" data-label="待遇" placeholder="例如：時薪190元 / 月薪32,000起"></div>
-    </div>
-    <div class="field"><label>工作內容</label><textarea required data-field="jobContent" data-label="工作內容"></textarea></div>
-    <div class="row2">
-      <div class="field"><label>工作時間</label><input type="text" required data-field="workTime" data-label="工作時間"></div>
-      <div class="field"><label>工作地點</label><input type="text" required data-field="workLocation" data-label="工作地點"></div>
-    </div>
-    <div class="field"><label>其它備註 <span class="opt">(可不填)</span></label><textarea data-field="otherNotes" data-label="其它備註"></textarea></div>
+    <div id="jobEntries"></div>
+    <button type="button" class="add-job-btn" id="addJobBtn">＋ 新增職缺</button>
 
     <div class="actions-bar">
       <button type="button" class="btn btn-ghost" data-action="preview">👁️ 預覽</button>
@@ -525,20 +478,30 @@
     <p>由企業提供場地及講師，我們募集 20 位有求職意願的民眾，到企業端進行企業介紹，並了解產業的工作內容與性質。宣傳、旅平保險及參加者交通費皆由本據點負責，能有效提升企業的社會友善形象。</p>
   </div>
 
-  <div class="video-block">
-    <div class="section-label">職場體驗介紹影片</div>
-    <div class="video-frame video-frame-local"><video controls preload="metadata" src="job-t.mp4">您的瀏覽器不支援影片播放，請直接聯繫我們索取介紹影片。</video></div>
+  <div class="line-reminder">
+    <img class="lr-qr" alt="官方 LINE QR Code">
+    <div class="lr-text">
+      <div class="lr-title">送出前也歡迎先加入官方 LINE：<a href="https://lin.ee/59fVmBR" target="_blank" rel="noopener">https://lin.ee/59fVmBR</a></div>
+      <span class="highlight-note">加入後請第一時間傳訊息或貼圖給我們，我們才看得到您並能為您服務</span>
+    </div>
   </div>
+
+  <div class="section-label">職場體驗介紹影片</div>
+  <div class="video-box" style="border-radius:12px;margin-bottom:20px;"><video controls preload="metadata" src="job-f.mp4">您的瀏覽器不支援影片播放。</video></div>
 
   <div id="workexp-form-wrap">
   <form id="form-workexp" class="panel" data-service="work_experience" novalidate>
     <div class="section-label">公司資料</div>
     <div class="row2">
       <div class="field"><label>公司名稱</label><input type="text" required data-field="companyName" data-label="公司名稱"></div>
-      <div class="field"><label>聯絡窗口姓名</label><input type="text" required data-field="contactName" data-label="聯絡窗口姓名"></div>
+      <div class="field"><label>統一編號</label><input type="text" required data-field="taxId" data-label="統一編號"></div>
     </div>
     <div class="row2">
+      <div class="field"><label>聯絡窗口姓名</label><input type="text" required data-field="contactName" data-label="聯絡窗口姓名"></div>
       <div class="field"><label>聯絡電話</label><input type="tel" required data-field="contactPhone" data-label="聯絡電話"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>電子信箱 E-mail</label><input type="email" required data-field="companyEmail" data-label="電子信箱"></div>
       <div class="field"><label>聯絡地址</label><input type="text" required data-field="companyAddress" data-label="聯絡地址"></div>
     </div>
     <div class="field"><label>其它備註 <span class="opt">(可不填)</span></label><textarea data-field="otherNotes" data-label="其它備註"></textarea></div>
@@ -557,13 +520,28 @@
 </main>
 
 <footer class="site-footer">
-  基隆市銀髮人才服務據點 ｜ 地址：基隆市仁愛區愛三路9號3樓 ｜ 電話：02-2428-5655 ｜ Email：kcs202355@gmail.com<br>
-  上班時間｜周一至五 08:30-12:30、13:30-17:30（國定與例假日休）
+  <div class="wrap footer-grid">
+    <div>
+      <h3>基隆市銀髮人才服務據點</h3>
+      <p>企業服務｜人才招募｜求才媒合｜人資輔導</p>
+      <p>地址｜基隆市仁愛區愛三路9號3樓</p>
+      <p>上班時間｜週一至五 08:30–12:30、13:30–17:30（國定與例假日休）</p>
+    </div>
+    <div>
+      <p>服務電話</p>
+      <p class="phone-num">02-2428-5655</p>
+      <p>kcs202355@gmail.com</p>
+    </div>
+    <div>
+      <img class="footer-qr lr-qr" alt="官方 LINE QR Code">
+    </div>
+  </div>
 </footer>
 
 <script>
 const LINE_LINK = 'https://lin.ee/59fVmBR';
-const LINE_QR = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=8&data=' + encodeURIComponent(LINE_LINK);
+const LINE_QR = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=' + encodeURIComponent(LINE_LINK);
+document.querySelectorAll('.lr-qr').forEach(img => img.src = LINE_QR);
 
 const SERVICE_LABELS = {
   coaching: '企業入輔（專家入場輔導）',
@@ -585,21 +563,42 @@ document.querySelectorAll('[data-goto]').forEach(el=>{
   el.addEventListener('click', ()=> goto(el.dataset.goto));
 });
 
-/* ---------- 聯合徵才：切換活動類型顯示對應影片 ---------- */
-document.querySelectorAll('input[name="joint-eventType"]').forEach(r=>{
-  r.addEventListener('change', ()=>{
-    const smallChecked = document.querySelector('input[name="joint-eventType"][value^="小型"]').checked;
-    const largeChecked = document.querySelector('input[name="joint-eventType"][value^="大型"]').checked;
-    document.getElementById('joint-video-small').style.display = smallChecked ? 'block' : 'none';
-    document.getElementById('joint-video-large').style.display = largeChecked ? 'block' : 'none';
-  });
-});
+/* ============================================================
+   台灣縣市／行政區資料（用於即時求才媒合的工作地點選單）
+============================================================ */
+const COUNTY_DISTRICTS = {
+  "基隆市":["中正區","七堵區","暖暖區","仁愛區","安樂區","信義區","中山區"],
+  "臺北市":["中正區","大同區","中山區","松山區","大安區","萬華區","信義區","士林區","北投區","內湖區","南港區","文山區"],
+  "新北市":["板橋區","三重區","中和區","永和區","新莊區","新店區","樹林區","鶯歌區","三峽區","淡水區","汐止區","瑞芳區","土城區","蘆洲區","五股區","泰山區","林口區","深坑區","石碇區","坪林區","三芝區","石門區","八里區","平溪區","雙溪區","貢寮區","金山區","萬里區","烏來區"],
+  "桃園市":["桃園區","中壢區","平鎮區","八德區","楊梅區","蘆竹區","大溪區","龍潭區","龜山區","大園區","觀音區","新屋區","復興區"],
+  "新竹市":["東區","北區","香山區"],
+  "新竹縣":["竹北市","竹東鎮","新埔鎮","關西鎮","湖口鄉","新豐鄉","芎林鄉","橫山鄉","北埔鄉","寶山鄉","峨眉鄉","尖石鄉","五峰鄉"],
+  "苗栗縣":["苗栗市","頭份市","竹南鎮","後龍鎮","通霄鎮","苑裡鎮","卓蘭鎮","造橋鄉","西湖鄉","頭屋鄉","公館鄉","銅鑼鄉","三義鄉","大湖鄉","獅潭鄉","三灣鄉","南庄鄉","泰安鄉"],
+  "台中市":["中區","東區","南區","西區","北區","北屯區","西屯區","南屯區","太平區","大里區","霧峰區","烏日區","豐原區","后里區","石岡區","東勢區","和平區","新社區","潭子區","大雅區","神岡區","大肚區","沙鹿區","龍井區","梧棲區","清水區","大甲區","外埔區","大安區"],
+  "彰化縣":["彰化市","鹿港鎮","和美鎮","線西鄉","伸港鄉","福興鄉","秀水鄉","花壇鄉","芬園鄉","員林市","溪湖鎮","田中鎮","大村鄉","埔鹽鄉","埔心鄉","永靖鄉","社頭鄉","二水鄉","北斗鎮","二林鎮","田尾鄉","埤頭鄉","芳苑鄉","大城鄉","竹塘鄉","溪州鄉"],
+  "南投縣":["南投市","埔里鎮","草屯鎮","竹山鎮","集集鎮","名間鄉","鹿谷鄉","中寮鄉","魚池鄉","國姓鄉","水里鄉","信義鄉","仁愛鄉"],
+  "雲林縣":["斗六市","斗南鎮","虎尾鎮","西螺鎮","土庫鎮","北港鎮","古坑鄉","大埤鄉","莿桐鄉","林內鄉","二崙鄉","崙背鄉","麥寮鄉","東勢鄉","褒忠鄉","台西鄉","元長鄉","四湖鄉","口湖鄉","水林鄉"],
+  "嘉義市":["東區","西區"],
+  "嘉義縣":["太保市","朴子市","布袋鎮","大林鎮","民雄鄉","溪口鄉","新港鄉","六腳鄉","東石鄉","義竹鄉","鹿草鄉","水上鄉","中埔鄉","竹崎鄉","梅山鄉","番路鄉","大埔鄉","阿里山鄉"],
+  "台南市":["中西區","東區","南區","北區","安平區","安南區","永康區","歸仁區","新化區","左鎮區","玉井區","楠西區","南化區","仁德區","關廟區","龍崎區","官田區","麻豆區","佳里區","西港區","七股區","將軍區","學甲區","北門區","新營區","後壁區","白河區","東山區","六甲區","下營區","柳營區","鹽水區","善化區","大內區","山上區","新市區","安定區"],
+  "高雄市":["鹽埕區","鼓山區","左營區","楠梓區","三民區","新興區","前金區","苓雅區","前鎮區","旗津區","小港區","鳳山區","林園區","大寮區","大樹區","大社區","仁武區","鳥松區","岡山區","橋頭區","燕巢區","田寮區","阿蓮區","路竹區","湖內區","茄萣區","永安區","彌陀區","梓官區","旗山區","美濃區","六龜區","甲仙區","杉林區","內門區","茂林區","桃源區","那瑪夏區"],
+  "屏東縣":["屏東市","潮州鎮","東港鎮","恆春鎮","萬丹鄉","長治鄉","麟洛鄉","九如鄉","里港鄉","鹽埔鄉","高樹鄉","萬巒鄉","內埔鄉","竹田鄉","新埤鄉","枋寮鄉","新園鄉","崁頂鄉","林邊鄉","南州鄉","佳冬鄉","琉球鄉","車城鄉","滿州鄉","枋山鄉","三地門鄉","霧台鄉","瑪家鄉","泰武鄉","來義鄉","春日鄉","獅子鄉","牡丹鄉"],
+  "宜蘭縣":["宜蘭市","羅東鎮","蘇澳鎮","頭城鎮","礁溪鄉","壯圍鄉","員山鄉","冬山鄉","五結鄉","三星鄉","大同鄉","南澳鄉"],
+  "花蓮縣":["花蓮市","鳳林鎮","玉里鎮","新城鄉","吉安鄉","壽豐鄉","秀林鄉","光復鄉","豐濱鄉","瑞穗鄉","萬榮鄉","富里鄉","卓溪鄉"],
+  "台東縣":["台東市","成功鎮","關山鎮","卑南鄉","大武鄉","太麻里鄉","東河鄉","長濱鄉","鹿野鄉","池上鄉","綠島鄉","延平鄉","海端鄉","達仁鄉","金峰鄉","蘭嶼鄉"],
+  "澎湖縣":["馬公市","湖西鄉","白沙鄉","西嶼鄉","望安鄉","七美鄉"],
+  "金門縣":["金城鎮","金湖鎮","金沙鎮","金寧鄉","烈嶼鄉","烏坵鄉"],
+  "連江縣":["南竿鄉","北竿鄉","莒光鄉","東引鄉"]
+};
+const COUNTY_LIST = ["不限", ...Object.keys(COUNTY_DISTRICTS)];
 
-/* ---------- 表單資料收集 ---------- */
+/* ---------- 表單資料收集（一般欄位） ---------- */
 function collectFormData(formEl){
   const data = {};
   const previewItems = [];
+  formEl.querySelectorAll(':scope > [data-field], :scope .row2 > [data-field], :scope > .field > [data-field], :scope .field [data-field]').forEach(()=>{});
   formEl.querySelectorAll('[data-field]').forEach(el=>{
+    if(el.closest('.job-entry')) return; // 職缺內容另外處理
     const field = el.dataset.field;
     const label = el.dataset.label || field;
     const type = el.dataset.type;
@@ -621,21 +620,21 @@ function collectFormData(formEl){
 
 function validateForm(formEl){
   let ok = true;
-  const missingLabels = [];
   formEl.querySelectorAll('input[required][data-field], textarea[required][data-field]').forEach(el=>{
-    if(!el.value.trim()){ ok=false; missingLabels.push(el.dataset.label); el.style.borderColor='var(--warn)'; }
+    if(el.closest('.job-entry')) return;
+    if(!el.value.trim()){ ok=false; el.style.borderColor='var(--warn)'; }
     else{ el.style.borderColor=''; }
   });
   formEl.querySelectorAll('[data-type="checkbox-group"]').forEach(group=>{
     const anyChecked = group.querySelectorAll('input:checked').length > 0;
     const msg = formEl.querySelector('[data-group-msg="'+group.dataset.field+'"]');
-    if(!anyChecked){ ok=false; if(msg) msg.style.display='block'; missingLabels.push(group.dataset.label); }
+    if(!anyChecked){ ok=false; if(msg) msg.style.display='block'; }
     else if(msg){ msg.style.display='none'; }
   });
   formEl.querySelectorAll('[data-type="radio-group"]').forEach(group=>{
     const anyChecked = group.querySelectorAll('input:checked').length > 0;
     const msg = formEl.querySelector('[data-group-msg="'+group.dataset.field+'"]');
-    if(!anyChecked){ ok=false; if(msg) msg.style.display='block'; missingLabels.push(group.dataset.label); }
+    if(!anyChecked){ ok=false; if(msg) msg.style.display='block'; }
     else if(msg){ msg.style.display='none'; }
   });
   const msgEl = formEl.querySelector('[data-required-msg]');
@@ -648,8 +647,179 @@ function validateForm(formEl){
   return ok;
 }
 
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+/* ============================================================
+   即時求才媒合：可新增多筆職缺，每筆含多個工作地點選單
+============================================================ */
+let jobEntryCounter = 0;
+function countyOptions(selected){
+  return COUNTY_LIST.map(c => `<option value="${c}"${c===selected?' selected':''}>${c}</option>`).join('');
+}
+function districtOptions(county, selected){
+  const list = county && COUNTY_DISTRICTS[county] ? ["全區", ...COUNTY_DISTRICTS[county]] : ["全區"];
+  return list.map(d => `<option value="${d}"${d===selected?' selected':''}>${d}</option>`).join('');
+}
+function locationBlockHtml(idx, locIdx, requiredCounty){
+  const reqStar = requiredCounty ? '（必填縣市）' : '（可不填）';
+  return `
+    <div class="loc-block" data-loc="${locIdx}">
+      <div class="loc-label">工作地點${['一','二','三'][locIdx]} ${reqStar}</div>
+      <div class="row3">
+        <div class="field" style="margin-bottom:8px;">
+          <select class="loc-county" ${requiredCounty ? 'required' : ''}>
+            <option value="">請選擇縣市</option>
+            ${countyOptions('')}
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:8px;">
+          <select class="loc-district"><option value="">行政區（可不填）</option></select>
+        </div>
+        <div class="field" style="margin-bottom:8px;">
+          <input type="text" class="loc-street" placeholder="路／街道／巷弄門牌（可不填）">
+        </div>
+      </div>
+    </div>
+  `;
+}
+function jobEntryHtml(idx){
+  return `
+    <div class="job-entry" data-job-idx="${idx}">
+      <div class="job-entry-head">
+        <div class="je-title">職缺 ${idx+1}</div>
+        <button type="button" class="je-remove" data-remove-job="${idx}" style="display:none;">✕ 移除此職缺</button>
+      </div>
+      <div class="row2">
+        <div class="field"><label>職稱</label><input type="text" class="je-jobTitle" required></div>
+        <div class="field"><label>需求人數</label><input type="text" class="je-headcount" required></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>學歷/資格 <span class="opt">(可不填)</span></label><input type="text" class="je-education"></div>
+        <div class="field"><label>待遇</label><input type="text" class="je-salary" required placeholder="例如：時薪190元 / 月薪32,000起"></div>
+      </div>
+      <div class="field"><label>工作內容</label><textarea class="je-jobContent" required></textarea></div>
+      <div class="field"><label>工作時間 <span class="opt">（可填三班制等詳細班表）</span></label><textarea class="je-workTime tall" required placeholder="例如：日班 08:00-17:00／小夜班 16:00-24:00／大夜班 00:00-08:00"></textarea></div>
+
+      ${locationBlockHtml(idx, 0, true)}
+      ${locationBlockHtml(idx, 1, false)}
+      ${locationBlockHtml(idx, 2, false)}
+
+      <div class="simple-check">
+        <input type="checkbox" class="je-dispatch-residence">
+        <span><span class="sc-label">依居住區域派案</span><span class="sc-sub">公司會依照求職者的居住區域固定派案，不需跑其他區域</span></span>
+      </div>
+      <div class="simple-check">
+        <input type="checkbox" class="je-dispatch-assigned">
+        <span><span class="sc-label">依指定地區派案</span><span class="sc-sub">所列地區皆有派案需求，需依各指定地區前往執行</span></span>
+      </div>
+
+      <div class="field" style="margin-top:10px;"><label>其它備註 <span class="opt">(可不填)</span></label><textarea class="je-otherNotes"></textarea></div>
+    </div>
+  `;
+}
+function bindLocationDropdowns(jobEntryEl){
+  jobEntryEl.querySelectorAll('.loc-block').forEach(block=>{
+    const countySel = block.querySelector('.loc-county');
+    const districtSel = block.querySelector('.loc-district');
+    countySel.addEventListener('change', ()=>{
+      districtSel.innerHTML = '<option value="">行政區（可不填）</option>' + districtOptions(countySel.value, '');
+    });
+  });
+}
+function addJobEntry(){
+  const container = document.getElementById('jobEntries');
+  const idx = jobEntryCounter++;
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = jobEntryHtml(idx);
+  const entryEl = wrapper.firstElementChild;
+  container.appendChild(entryEl);
+  bindLocationDropdowns(entryEl);
+  updateRemoveButtons();
+}
+function updateRemoveButtons(){
+  const entries = document.querySelectorAll('#jobEntries .job-entry');
+  entries.forEach(entry=>{
+    const btn = entry.querySelector('.je-remove');
+    btn.style.display = entries.length > 1 ? 'inline-block' : 'none';
+  });
+}
+document.getElementById('jobEntries').addEventListener('click', e=>{
+  if(e.target.matches('[data-remove-job]')){
+    e.target.closest('.job-entry').remove();
+    updateRemoveButtons();
+  }
+});
+document.getElementById('addJobBtn').addEventListener('click', addJobEntry);
+addJobEntry(); // 預設先給一筆
+
+function collectJobEntries(){
+  const jobs = [];
+  document.querySelectorAll('#jobEntries .job-entry').forEach(entry=>{
+    const locations = [0,1,2].map(i=>{
+      const block = entry.querySelector(`.loc-block[data-loc="${i}"]`);
+      return {
+        county: block.querySelector('.loc-county').value.trim(),
+        district: block.querySelector('.loc-district').value.trim(),
+        street: block.querySelector('.loc-street').value.trim()
+      };
+    }).filter(l => l.county || l.district || l.street);
+    jobs.push({
+      jobTitle: entry.querySelector('.je-jobTitle').value.trim(),
+      headcount: entry.querySelector('.je-headcount').value.trim(),
+      education: entry.querySelector('.je-education').value.trim(),
+      salary: entry.querySelector('.je-salary').value.trim(),
+      jobContent: entry.querySelector('.je-jobContent').value.trim(),
+      workTime: entry.querySelector('.je-workTime').value.trim(),
+      locations,
+      dispatchByResidence: entry.querySelector('.je-dispatch-residence').checked,
+      dispatchByAssignedArea: entry.querySelector('.je-dispatch-assigned').checked,
+      otherNotes: entry.querySelector('.je-otherNotes').value.trim()
+    });
+  });
+  return jobs;
+}
+function validateJobEntries(){
+  let ok = true;
+  document.querySelectorAll('#jobEntries .job-entry').forEach(entry=>{
+    entry.querySelectorAll('input[required], textarea[required], select[required]').forEach(el=>{
+      if(!el.value.trim()){ ok=false; el.style.borderColor='var(--warn)'; }
+      else{ el.style.borderColor=''; }
+    });
+  });
+  return ok;
+}
+
 /* ---------- 預覽畫面 ---------- */
-function renderPreview(serviceId, previewItems, formWrapEl, previewEl){
+function renderJobsPreview(jobs){
+  return jobs.map((job, i)=>{
+    const locLines = job.locations.map((l,li)=>{
+      const parts = [l.county, l.district, l.street].filter(Boolean);
+      return parts.length ? `地點${['一','二','三'][li]}：${parts.join(' ')}` : '';
+    }).filter(Boolean).join('<br>');
+    const dispatch = [
+      job.dispatchByResidence ? '依居住區域派案' : '',
+      job.dispatchByAssignedArea ? '依指定地區派案' : ''
+    ].filter(Boolean).join('、');
+    return `
+      <div class="preview-job">
+        <div class="pj-title">職缺 ${i+1}：${escapeHtml(job.jobTitle)}</div>
+        <div class="preview-line"><div class="pl-label">需求人數</div><div class="pl-value">${escapeHtml(job.headcount)}</div></div>
+        ${job.education ? `<div class="preview-line"><div class="pl-label">學歷/資格</div><div class="pl-value">${escapeHtml(job.education)}</div></div>` : ''}
+        <div class="preview-line"><div class="pl-label">待遇</div><div class="pl-value">${escapeHtml(job.salary)}</div></div>
+        <div class="preview-line"><div class="pl-label">工作內容</div><div class="pl-value">${escapeHtml(job.jobContent)}</div></div>
+        <div class="preview-line"><div class="pl-label">工作時間</div><div class="pl-value">${escapeHtml(job.workTime)}</div></div>
+        ${locLines ? `<div class="preview-line"><div class="pl-label">工作地點</div><div class="pl-value">${locLines}</div></div>` : ''}
+        ${dispatch ? `<div class="preview-line"><div class="pl-label">派案方式</div><div class="pl-value">${escapeHtml(dispatch)}</div></div>` : ''}
+        ${job.otherNotes ? `<div class="preview-line"><div class="pl-label">其它備註</div><div class="pl-value">${escapeHtml(job.otherNotes)}</div></div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+/* ---------- 一般預覽畫面 ---------- */
+function renderPreview(serviceId, previewItems, formWrapEl, previewEl, jobsHtml){
   const rows = previewItems
     .filter(it => it.value)
     .map(it => `<div class="preview-line"><div class="pl-label">${it.label}</div><div class="pl-value">${escapeHtml(it.value)}</div></div>`)
@@ -657,6 +827,7 @@ function renderPreview(serviceId, previewItems, formWrapEl, previewEl){
   previewEl.innerHTML = `
     <div class="section-label">內容預覽</div>
     ${rows}
+    ${jobsHtml ? `<div class="section-label">職缺內容</div>${jobsHtml}` : ''}
     <div class="actions-bar">
       <button type="button" class="btn btn-ghost" data-back-edit="${serviceId}">✏️ 返回修改</button>
       <button type="button" class="btn btn-primary" data-confirm-submit="${serviceId}">✅ 確認送出</button>
@@ -665,10 +836,6 @@ function renderPreview(serviceId, previewItems, formWrapEl, previewEl){
   formWrapEl.style.display = 'none';
   previewEl.style.display = 'block';
   previewEl.scrollIntoView({behavior:'smooth'});
-}
-
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
 /* ---------- 感謝畫面 ---------- */
@@ -685,14 +852,18 @@ function renderThanks(serviceId, thanksEl, previewEl){
           <div class="lb-title">加入官方 LINE</div>
           <div>追蹤後續進度及線上專員服務</div>
           <a href="${LINE_LINK}" target="_blank" rel="noopener">${LINE_LINK}</a>
+          <div class="highlight-note" style="margin-top:10px;">加入後請主動告知「公司名稱＋本次申請服務」，方便專員快速為您服務</div>
         </div>
       </div>
       <div class="contact-footer">
         基隆市銀髮人才服務據點｜基隆市仁愛區愛三路9號3樓<br>
         電話｜02-2428-5655　　Email｜kcs202355@gmail.com<br>
-        上班時間｜周一至五 08:30-12:30、13:30-17:30（國定與例假日休）
+        上班時間｜週一至五 08:30–12:30、13:30–17:30（國定與例假日休）
       </div>
-      <button type="button" class="btn btn-ghost btn-restart" data-goto="home">回到服務首頁</button>
+      <div class="thanks-actions">
+        <button type="button" class="btn btn-primary" data-refill="${serviceId}">📝 再填寫一筆同服務申請</button>
+        <button type="button" class="btn btn-ghost" data-goto="home">回到服務首頁</button>
+      </div>
     </div>
   `;
   thanksEl.style.display = 'block';
@@ -701,7 +872,7 @@ function renderThanks(serviceId, thanksEl, previewEl){
 }
 
 /* ---------- 綁定四個表單 ---------- */
-function setupForm(formId, serviceId){
+function setupForm(formId, serviceId, isJobMatching){
   const formEl = document.getElementById(formId);
   const formWrapEl = formEl.parentElement;
   const previewEl = document.getElementById('preview-'+serviceId);
@@ -709,10 +880,25 @@ function setupForm(formId, serviceId){
   let lastData = null;
 
   formEl.querySelector('[data-action="preview"]').addEventListener('click', ()=>{
-    if(!validateForm(formEl)) return;
+    const basicOk = validateForm(formEl);
+    const jobsOk = isJobMatching ? validateJobEntries() : true;
+    if(!basicOk || !jobsOk){
+      if(isJobMatching && !jobsOk){
+        const msgEl = formEl.querySelector('[data-required-msg]');
+        msgEl.style.display='block';
+        msgEl.textContent = '⚠️ 職缺內容尚有必填欄位未完成，請往上檢查標示為紅色的欄位';
+      }
+      return;
+    }
     const { data, previewItems } = collectFormData(formEl);
+    let jobsHtml = '';
+    if(isJobMatching){
+      const jobs = collectJobEntries();
+      data.jobs = jobs;
+      jobsHtml = renderJobsPreview(jobs);
+    }
     lastData = data;
-    renderPreview(serviceId, previewItems, formWrapEl, previewEl);
+    renderPreview(serviceId, previewItems, formWrapEl, previewEl, jobsHtml);
   });
 
   previewEl.addEventListener('click', async (e)=>{
@@ -732,7 +918,6 @@ function setupForm(formId, serviceId){
         });
         if(!res.ok) throw new Error('送出失敗');
         renderThanks(serviceId, thanksEl, previewEl);
-        formEl.reset();
       }catch(err){
         e.target.disabled = false;
         e.target.textContent = '✅ 確認送出';
@@ -740,12 +925,28 @@ function setupForm(formId, serviceId){
       }
     }
   });
+
+  thanksEl.addEventListener('click', e=>{
+    if(e.target.matches('[data-refill]')){
+      // 重設表單，讓同一份表單可以無限次重新填寫
+      formEl.reset();
+      formEl.querySelectorAll('input, textarea, select').forEach(el=> el.style.borderColor='');
+      if(isJobMatching){
+        document.getElementById('jobEntries').innerHTML = '';
+        jobEntryCounter = 0;
+        addJobEntry();
+      }
+      thanksEl.style.display = 'none';
+      formWrapEl.style.display = 'block';
+      formWrapEl.scrollIntoView({behavior:'smooth'});
+    }
+  });
 }
 
-setupForm('form-coaching', 'coaching');
-setupForm('form-joint', 'joint_recruitment');
-setupForm('form-jobmatch', 'job_matching');
-setupForm('form-workexp', 'work_experience');
+setupForm('form-coaching', 'coaching', false);
+setupForm('form-joint', 'joint_recruitment', false);
+setupForm('form-jobmatch', 'job_matching', true);
+setupForm('form-workexp', 'work_experience', false);
 </script>
 </body>
 </html>
