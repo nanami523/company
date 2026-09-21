@@ -3,308 +3,672 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>後台管理 ｜ 企業服務申請系統</title>
-<meta name="robots" content="noindex, nofollow">
+<title>企業服務申請 ｜ 基隆市銀髮人才服務據點</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#2b2620; --ink-soft:#5c554a; --paper:#faf7f1; --panel:#ffffff;
-    --line:#e4ddce; --accent:#1f6f5c; --accent-dark:#164f41; --accent-soft:#e4efe9;
-    --warn:#b5482e; --warn-soft:#f7e6e0; --gold:#b8873a; --radius:10px;
+    --ink:#2b2620;
+    --ink-soft:#5c554a;
+    --paper:#faf7f1;
+    --panel:#ffffff;
+    --line:#e4ddce;
+    --accent:#1f6f5c;
+    --accent-dark:#164f41;
+    --accent-soft:#e4efe9;
+    --warn:#b5482e;
+    --warn-soft:#f7e6e0;
+    --gold:#b8873a;
+    --gold-soft:#f3e9d4;
+    --radius:10px;
     font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
   }
   *{box-sizing:border-box;}
-  body{ margin:0; background:var(--paper); color:var(--ink); line-height:1.6; }
-
-  /* ---- 登入畫面 ---- */
-  #login-screen{
-    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.7;
   }
-  .login-box{
+  h1,h2,h3{ font-family:"Noto Serif TC",serif; }
+
+  /* ===== 頁首 ===== */
+  header.masthead{
+    background:var(--accent-dark);
+    color:#fdf9f0;
+    padding:14px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    position:sticky;
+    top:0;
+    z-index:30;
+  }
+  header.masthead .brand{
+    display:flex; align-items:center; gap:10px;
+    font-size:15px; font-weight:700; letter-spacing:.5px;
+  }
+  header.masthead .brand .dot{
+    width:8px; height:8px; border-radius:50%; background:var(--gold);
+  }
+  header.masthead nav{ display:flex; gap:4px; flex-wrap:wrap; }
+  header.masthead nav button{
+    background:transparent; border:1px solid rgba(255,255,255,.25);
+    color:#fdf9f0; padding:7px 14px; border-radius:99px; font-size:13px; cursor:pointer;
+  }
+  header.masthead nav button.active{ background:var(--gold); border-color:var(--gold); color:#2b2620; font-weight:700; }
+
+  /* ===== 首頁 Hero ===== */
+  .hero{
+    max-width:960px; margin:0 auto; padding:56px 24px 20px;
+    text-align:center;
+  }
+  .hero .eyebrow{
+    color:var(--gold); font-weight:700; font-size:13px; letter-spacing:2px;
+  }
+  .hero h1{
+    font-size:32px; margin:10px 0 16px; color:var(--accent-dark); line-height:1.4;
+  }
+  .hero p.lead{
+    color:var(--ink-soft); font-size:15px; max-width:560px; margin:0 auto 8px;
+  }
+
+  .service-grid{
+    max-width:960px; margin:32px auto 60px; padding:0 24px;
+    display:grid; grid-template-columns:1fr 1fr; gap:18px;
+  }
+  @media (max-width:700px){ .service-grid{ grid-template-columns:1fr; } }
+  .service-card{
     background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
-    padding:36px 32px; max-width:340px; width:100%; text-align:center;
+    padding:24px; text-align:left; cursor:pointer; transition:border-color .15s, transform .15s;
+    display:flex; flex-direction:column; gap:8px;
   }
-  .login-box h1{ font-size:18px; color:var(--accent-dark); margin:0 0 6px; }
-  .login-box p{ font-size:12.5px; color:var(--ink-soft); margin:0 0 20px; }
-  .login-box input{
-    width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:7px;
-    font-size:14px; margin-bottom:12px; font-family:inherit;
+  .service-card:hover{ border-color:var(--accent); transform:translateY(-2px); }
+  .service-card .tag{
+    display:inline-block; font-size:11px; font-weight:700; color:var(--accent-dark);
+    background:var(--accent-soft); padding:3px 10px; border-radius:99px; width:fit-content;
   }
-  .login-box button{
-    width:100%; border:none; background:var(--accent); color:#fff; padding:11px;
-    border-radius:7px; font-size:14px; font-weight:700; cursor:pointer;
-  }
-  .login-box button:hover{ background:var(--accent-dark); }
-  .login-err{ color:var(--warn); font-size:12.5px; margin-top:10px; min-height:16px; }
+  .service-card h3{ margin:2px 0 0; font-size:19px; color:var(--ink); }
+  .service-card p{ margin:0; font-size:13px; color:var(--ink-soft); }
+  .service-card .go{ margin-top:8px; font-size:13px; color:var(--accent-dark); font-weight:700; }
 
-  /* ---- 後台主畫面 ---- */
-  #admin-screen{ display:none; }
-  header.topbar{
-    background:var(--accent-dark); color:#fdf9f0; padding:16px 24px;
-    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  /* ===== 內文區塊 ===== */
+  main{ max-width:820px; margin:0 auto; padding:36px 24px 80px; }
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+  .service-intro{ margin-bottom:26px; }
+  .service-intro .eyebrow{ color:var(--gold); font-weight:700; font-size:12px; letter-spacing:2px; }
+  .service-intro h2{ font-size:26px; color:var(--accent-dark); margin:8px 0 12px; }
+  .service-intro p{ color:var(--ink-soft); font-size:14.5px; }
+  .back-link{
+    background:none; border:none; color:var(--ink-soft); font-size:13px; cursor:pointer;
+    padding:0; margin-bottom:18px; display:inline-flex; align-items:center; gap:4px;
   }
-  header.topbar h1{ font-size:16px; margin:0; }
-  header.topbar button{
-    background:transparent; border:1px solid rgba(255,255,255,.3); color:#fdf9f0;
-    padding:6px 14px; border-radius:99px; font-size:12.5px; cursor:pointer;
-  }
-  main{ max-width:1080px; margin:0 auto; padding:24px; }
-  .filter-bar{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
-  .pill-btn{
-    border:1px solid var(--line); background:#fff; border-radius:99px; padding:7px 16px;
-    font-size:12.5px; cursor:pointer; color:var(--ink-soft);
-  }
-  .pill-btn.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
-  table{ width:100%; border-collapse:collapse; font-size:13px; background:#fff; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
-  th,td{ border-bottom:1px solid var(--line); padding:10px 10px; text-align:left; vertical-align:top; }
-  th{ background:#f4efe4; color:var(--ink-soft); font-size:12px; }
-  tr:last-child td{ border-bottom:none; }
-  tr:hover{ background:#fbf8f2; cursor:pointer; }
-  .tag{ display:inline-block; font-size:11px; padding:2px 9px; border-radius:99px; font-weight:700; }
-  .tag-coaching{ background:#e4efe9; color:#164f41; }
-  .tag-joint_recruitment{ background:#f3e9d4; color:#8a6417; }
-  .tag-job_matching{ background:#e6ecf7; color:#2c4a8c; }
-  .tag-work_experience{ background:#f7e6e0; color:#b5482e; }
-  .status-new{ font-weight:700; color:var(--warn); }
-  .status-handled{ color:#8a8578; }
-  .empty-state{ text-align:center; padding:50px 10px; color:#9b9384; }
+  .back-link:hover{ color:var(--accent-dark); }
 
-  /* ---- 詳細資料 modal ---- */
-  .modal-backdrop{
-    display:none; position:fixed; inset:0; background:rgba(43,38,32,.5); z-index:50;
-    align-items:center; justify-content:center; padding:20px;
+  .info-box{
+    background:var(--accent-soft); border:1px solid #cfe2d9; border-radius:var(--radius);
+    padding:16px 18px; font-size:13.5px; color:var(--ink); margin-bottom:22px; line-height:1.8;
   }
-  .modal-backdrop.show{ display:flex; }
-  .modal{
-    background:#fff; border-radius:var(--radius); padding:26px 28px; max-width:560px; width:100%;
-    max-height:85vh; overflow-y:auto;
+  .info-box b{ color:var(--accent-dark); }
+  .note-box{
+    background:var(--gold-soft); border:1px dashed var(--gold); border-radius:var(--radius);
+    padding:14px 18px; font-size:13.5px; color:var(--ink); margin-bottom:22px;
   }
-  .modal h2{ font-size:17px; color:var(--accent-dark); margin:0 0 4px; }
-  .modal .modal-sub{ font-size:12px; color:var(--ink-soft); margin-bottom:18px; }
-  .detail-line{ margin-bottom:12px; }
-  .detail-line .dl-label{ font-size:12px; font-weight:700; color:var(--ink-soft); }
-  .detail-line .dl-value{ font-size:14px; white-space:pre-wrap; padding:3px 0; }
-  .modal-actions{ display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
-  .btn{ border:none; border-radius:7px; padding:9px 16px; font-size:13px; font-weight:700; cursor:pointer; }
+
+  .video-frame{
+    position:relative; width:100%; padding-top:56.25%; margin-bottom:22px;
+    border-radius:var(--radius); overflow:hidden; background:#000; border:1px solid var(--line);
+  }
+  .video-frame iframe{
+    position:absolute; top:0; left:0; width:100%; height:100%; border:0;
+  }
+  .video-frame-local{ padding-top:0; background:#000; }
+  .video-frame-local video{
+    display:block; width:100%; max-height:480px; background:#000;
+  }
+  .video-caption{ font-size:12px; color:var(--ink-soft); margin:-14px 0 22px; }
+
+  .panel{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:24px; margin-bottom:20px;
+  }
+  .section-label{
+    font-size:12px; letter-spacing:1px; color:var(--gold); font-weight:700;
+    margin:24px 0 10px; text-transform:uppercase;
+  }
+  .section-label:first-child{ margin-top:0; }
+  .field{ margin-bottom:16px; }
+  .field label{ display:block; font-size:13.5px; font-weight:700; margin-bottom:6px; color:var(--ink); }
+  .field label .opt{ font-weight:400; color:#9b9384; font-size:12px; margin-left:4px; }
+  .field input[type=text], .field input[type=tel], .field textarea{
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:7px;
+    font-size:14px; font-family:inherit; background:#fffdf9;
+  }
+  .field input:focus, .field textarea:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .field textarea{ resize:vertical; min-height:80px; }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:600px){ .row2{ grid-template-columns:1fr; } }
+
+  .checkbox-list{ display:flex; flex-direction:column; gap:9px; }
+  .checkbox-list label{
+    display:flex; align-items:flex-start; gap:9px; font-size:14px; font-weight:400;
+    padding:10px 12px; border:1px solid var(--line); border-radius:7px; cursor:pointer; background:#fffdf9;
+  }
+  .checkbox-list label:has(input:checked){ border-color:var(--accent); background:var(--accent-soft); }
+  .checkbox-list input{ margin-top:3px; }
+
+  .radio-cards{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:6px;}
+  @media (max-width:600px){ .radio-cards{ grid-template-columns:1fr; } }
+  .radio-cards label{
+    border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; cursor:pointer; background:#fffdf9;
+  }
+  .radio-cards label:has(input:checked){ border-color:var(--accent); background:var(--accent-soft); }
+  .radio-cards label .rt{ font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px; }
+  .radio-cards label .rd{ font-size:12.5px; color:var(--ink-soft); margin-top:4px; }
+
+  button.btn{ border:none; border-radius:7px; padding:11px 20px; font-size:14px; font-weight:700; cursor:pointer; }
   .btn-primary{ background:var(--accent); color:#fff; }
+  .btn-primary:hover{ background:var(--accent-dark); }
   .btn-ghost{ background:#fff; color:var(--accent-dark); border:1px solid var(--accent); }
-  .btn-danger{ background:#fff; color:var(--warn); border:1px solid var(--warn); }
+  .actions-bar{ display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
+  .form-msg{ margin-top:12px; font-size:13px; color:var(--warn); }
+
+  .preview-line{ margin-bottom:12px; }
+  .preview-line .pl-label{ font-size:12px; font-weight:700; color:var(--ink-soft); }
+  .preview-line .pl-value{ font-size:14.5px; white-space:pre-wrap; padding:4px 0; }
+
+  .thanks{ text-align:center; padding:10px 4px 4px; }
+  .thanks .check{
+    width:52px; height:52px; border-radius:50%; background:var(--accent-soft); color:var(--accent-dark);
+    display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 16px;
+  }
+  .thanks h3{ font-size:21px; color:var(--accent-dark); margin:0 0 10px; }
+  .thanks p{ color:var(--ink-soft); font-size:14px; margin:0 0 22px; }
+  .line-box{
+    display:flex; align-items:center; gap:18px; justify-content:center; flex-wrap:wrap;
+    background:#f4f9f2; border:1px solid #cfe2d9; border-radius:var(--radius); padding:22px; margin-bottom:22px;
+  }
+  .line-box img{ width:132px; height:132px; border-radius:8px; border:1px solid var(--line); background:#fff; }
+  .line-box .lb-text{ text-align:left; }
+  .line-box .lb-text .lb-title{ font-weight:700; color:var(--accent-dark); font-size:15px; margin-bottom:6px; }
+  .line-box .lb-text a{ color:var(--accent); font-weight:700; }
+  .contact-footer{
+    font-size:13px; color:var(--ink-soft); border-top:1px solid var(--line); padding-top:16px; line-height:2;
+  }
+  .btn-restart{ margin-top:18px; }
+
+  footer.site-footer{
+    text-align:center; font-size:12px; color:#a39a88; padding:30px 20px 50px;
+  }
 </style>
 </head>
 <body>
 
-<!-- ===================== 登入畫面 ===================== -->
-<div id="login-screen">
-  <div class="login-box">
-    <h1>後台管理登入</h1>
-    <p>僅供服務據點管理者使用</p>
-    <input type="password" id="login-password" placeholder="請輸入管理者密碼">
-    <button id="btn-login">登入</button>
-    <div class="login-err" id="login-err"></div>
+<header class="masthead">
+  <div class="brand"><span class="dot"></span> 基隆市銀髮人才服務據點 · 企業服務申請</div>
+  <nav id="topnav">
+    <button data-goto="home">服務首頁</button>
+    <button data-goto="coaching">企業入輔</button>
+    <button data-goto="joint_recruitment">聯合徵才</button>
+    <button data-goto="job_matching">即時求才</button>
+    <button data-goto="work_experience">職場體驗</button>
+  </nav>
+</header>
+
+<!-- ===================== 首頁 ===================== -->
+<section id="tab-home" class="tab-panel active">
+  <div class="hero">
+    <div class="eyebrow">企業服務申請專區</div>
+    <h1>四項免費企業服務，線上填寫，我們與您聯繫</h1>
+    <p class="lead">不論是想申請免費的專家入場輔導、參加聯合徵才、刊登急徵職缺，或是想開放職場讓民眾體驗，都可以在這裡線上完成申請，我們的專員會盡快與您聯繫。</p>
   </div>
-</div>
-
-<!-- ===================== 後台主畫面 ===================== -->
-<div id="admin-screen">
-  <header class="topbar">
-    <h1>企業服務申請 · 後台管理</h1>
-    <button id="btn-logout">登出</button>
-  </header>
-  <main>
-    <div class="filter-bar" id="service-filter">
-      <button class="pill-btn active" data-service="">全部服務</button>
-      <button class="pill-btn" data-service="coaching">企業入輔</button>
-      <button class="pill-btn" data-service="joint_recruitment">聯合徵才</button>
-      <button class="pill-btn" data-service="job_matching">即時求才媒合</button>
-      <button class="pill-btn" data-service="work_experience">職場體驗</button>
+  <div class="service-grid">
+    <div class="service-card" data-goto="coaching">
+      <span class="tag">免費 · 勞動部方案</span>
+      <h3>企業入輔</h3>
+      <p>專家入場輔導，協助人資制度、薪酬績效、缺工解方、世代溝通等九大主題。</p>
+      <span class="go">開始申請 →</span>
     </div>
-    <div class="filter-bar" id="status-filter">
-      <button class="pill-btn active" data-status="">全部狀態</button>
-      <button class="pill-btn" data-status="new">尚未處理</button>
-      <button class="pill-btn" data-status="handled">已處理</button>
+    <div class="service-card" data-goto="joint_recruitment">
+      <span class="tag">免費場地 · 形象加分</span>
+      <h3>聯合徵才</h3>
+      <p>小型或大型聯合徵才活動，免費場地與宣傳，現場一對一面試由據點協助處理。</p>
+      <span class="go">開始申請 →</span>
     </div>
-    <div id="list-container"></div>
-  </main>
-</div>
+    <div class="service-card" data-goto="job_matching">
+      <span class="tag">快速上架</span>
+      <h3>即時求才媒合</h3>
+      <p>留下職缺需求，免費協助上架至台灣就業通及據點宣傳平台。</p>
+      <span class="go">開始申請 →</span>
+    </div>
+    <div class="service-card" data-goto="work_experience">
+      <span class="tag">社會形象 · 免費保險</span>
+      <h3>職場體驗</h3>
+      <p>開放場地與講師，讓有求職意願的民眾認識產業與工作內容，交通與保險由據點安排。</p>
+      <span class="go">開始申請 →</span>
+    </div>
+  </div>
+</section>
 
-<!-- ===================== 詳細資料 Modal ===================== -->
-<div class="modal-backdrop" id="modal-backdrop">
-  <div class="modal" id="modal-content"></div>
-</div>
+<main>
+
+<!-- ===================== 1. 企業入輔 ===================== -->
+<section id="tab-coaching" class="tab-panel" data-service-tab="coaching">
+  <button class="back-link" data-goto="home">← 返回服務首頁</button>
+  <div class="service-intro">
+    <div class="eyebrow">免費勞動部協助方案</div>
+    <h2>企業入輔 — 專家入場輔導</h2>
+    <p>由專家實地入場，協助企業導入人力資源相關制度與解方。<b>申請本項服務需具備營業登記。</b></p>
+  </div>
+
+  <div id="coaching-form-wrap">
+  <form id="form-coaching" class="panel" data-service="coaching" novalidate>
+    <div class="section-label">公司資料</div>
+    <div class="row2">
+      <div class="field"><label>公司名稱</label><input type="text" required data-field="companyName" data-label="公司名稱"></div>
+      <div class="field"><label>統一編號</label><input type="text" required data-field="taxId" data-label="統一編號"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>負責人</label><input type="text" required data-field="ownerName" data-label="負責人"></div>
+      <div class="field"><label>聯絡窗口姓名</label><input type="text" required data-field="contactName" data-label="聯絡窗口姓名"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>聯絡電話</label><input type="tel" required data-field="contactPhone" data-label="聯絡電話"></div>
+      <div class="field"><label>聯絡地址</label><input type="text" required data-field="companyAddress" data-label="聯絡地址"></div>
+    </div>
+
+    <div class="section-label">想入輔的內容（可複選）</div>
+    <div class="field">
+      <div class="checkbox-list" data-field="topics" data-label="想入輔的內容" data-type="checkbox-group">
+        <label><input type="checkbox" name="coaching-topics" value="人力資源管理"> 人力資源管理</label>
+        <label><input type="checkbox" name="coaching-topics" value="人資制度：薪酬績效考核（KPI/OKR）"> 人資制度：薪酬績效考核（KPI/OKR）</label>
+        <label><input type="checkbox" name="coaching-topics" value="延後退休及回聘制度"> 延後退休及回聘制度</label>
+        <label><input type="checkbox" name="coaching-topics" value="績效考核發展"> 績效考核發展</label>
+        <label><input type="checkbox" name="coaching-topics" value="缺工解方"> 缺工解方</label>
+        <label><input type="checkbox" name="coaching-topics" value="激勵制度訂定"> 激勵制度訂定</label>
+        <label><input type="checkbox" name="coaching-topics" value="組織管理與人才培育接班人計畫（例如：中高階主管領導力培訓）"> 組織管理與人才培育接班人計畫（例如：中高階主管領導力培訓）</label>
+        <label><input type="checkbox" name="coaching-topics" value="中高齡職再設計及世代溝通"> 中高齡職再設計及世代溝通</label>
+      </div>
+      <div class="form-msg" data-group-msg="topics" style="display:none;">請至少選擇一項想入輔的內容</div>
+    </div>
+
+    <div class="field">
+      <label>其它需求或建議 <span class="opt">(非必填)</span></label>
+      <textarea data-field="otherNeeds" data-label="其它需求或建議"></textarea>
+    </div>
+    <div class="field">
+      <label>希望入輔時間及日期 <span class="opt">(非必填)</span></label>
+      <input type="text" data-field="preferredTime" data-label="希望入輔時間及日期" placeholder="例如：希望於 11 月中旬安排">
+    </div>
+
+    <div class="actions-bar">
+      <button type="button" class="btn btn-ghost" data-action="preview">👁️ 預覽</button>
+    </div>
+    <div class="form-msg" data-required-msg style="display:none;"></div>
+  </form>
+  </div>
+
+  <div class="panel" id="preview-coaching" style="display:none;"></div>
+  <div class="panel" id="thanks-coaching" style="display:none;"></div>
+
+  <div class="info-box">
+    <b>地點｜</b>基隆市銀髮人才服務據點（基隆市仁愛區愛三路9號3樓）<br>
+    <b>上班時間｜</b>周一至五 08:30-12:30、13:30-17:30（國定與例假日休）
+  </div>
+</section>
+
+<!-- ===================== 2. 聯合徵才 ===================== -->
+<section id="tab-joint_recruitment" class="tab-panel" data-service-tab="joint_recruitment">
+  <button class="back-link" data-goto="home">← 返回服務首頁</button>
+  <div class="service-intro">
+    <div class="eyebrow">免費場地 · 現場一對一面試</div>
+    <h2>聯合徵才</h2>
+    <p>提供免費場地供企業徵才，同時協助活動宣傳，對企業形象也有加分效果。活動現場會安排一對一面試，履歷收件與面試流程皆由本據點協助完成，公司僅需派員到場面試即可。當日並提供廠商餐盒與感謝狀，以表達謝意。</p>
+  </div>
+
+  <div id="joint-form-wrap">
+  <form id="form-joint" class="panel" data-service="joint_recruitment" novalidate>
+    <div class="section-label">選擇活動類型</div>
+    <div class="radio-cards" data-field="eventType" data-label="活動類型" data-type="radio-group">
+      <label>
+        <input type="radio" name="joint-eventType" value="小型聯合徵才">
+        <div class="rt">🏢 小型聯合徵才</div>
+        <div class="rd">場地限定 5～6 間廠商，地點於基隆市銀髮人才服務據點</div>
+      </label>
+      <label>
+        <input type="radio" name="joint-eventType" value="大型聯合徵才（年度活動，本年度已圓滿落幕，可預約明年度）">
+        <div class="rt">🎪 大型聯合徵才</div>
+        <div class="rd">一年一度活動，場地限定 10～12 間，另租借更大場地（本年度已圓滿落幕，可預約明年度）</div>
+      </label>
+    </div>
+    <div class="form-msg" data-group-msg="eventType" style="display:none;">請選擇活動類型</div>
+
+    <div id="joint-video-small" class="video-block" style="display:none;">
+      <div class="section-label">小型徵才活動花絮</div>
+      <div class="video-frame video-frame-local"><video controls preload="metadata" src="job-f.mp4">您的瀏覽器不支援影片播放，請直接聯繫我們索取花絮影片。</video></div>
+    </div>
+    <div id="joint-video-large" class="video-block" style="display:none;">
+      <div class="section-label">2026 年大型徵才活動花絮</div>
+      <div class="video-frame"><iframe src="https://www.youtube.com/embed/7DBq5cwknso" allowfullscreen></iframe></div>
+      <div class="video-caption">影片如果沒有顯示，<a href="https://youtu.be/7DBq5cwknso" target="_blank" rel="noopener">點此直接在 YouTube 觀看</a></div>
+    </div>
+
+    <div class="section-label">廠商資料</div>
+    <div class="row2">
+      <div class="field"><label>公司名稱</label><input type="text" required data-field="companyName" data-label="公司名稱"></div>
+      <div class="field"><label>統一編號</label><input type="text" required data-field="taxId" data-label="統一編號"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>負責人</label><input type="text" required data-field="ownerName" data-label="負責人"></div>
+      <div class="field"><label>聯絡窗口姓名</label><input type="text" required data-field="contactName" data-label="聯絡窗口姓名"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>聯絡電話</label><input type="tel" required data-field="contactPhone" data-label="聯絡電話"></div>
+      <div class="field"><label>聯絡地址</label><input type="text" required data-field="companyAddress" data-label="聯絡地址"></div>
+    </div>
+    <div class="field">
+      <label>需求月份及日期</label>
+      <input type="text" required data-field="preferredDate" data-label="需求月份及日期" placeholder="例如：希望安排於明年 3 月">
+    </div>
+
+    <div class="actions-bar">
+      <button type="button" class="btn btn-ghost" data-action="preview">👁️ 預覽</button>
+    </div>
+    <div class="form-msg" data-required-msg style="display:none;"></div>
+  </form>
+  </div>
+
+  <div class="panel" id="preview-joint_recruitment" style="display:none;"></div>
+  <div class="panel" id="thanks-joint_recruitment" style="display:none;"></div>
+</section>
+
+<!-- ===================== 3. 即時求才媒合 ===================== -->
+<section id="tab-job_matching" class="tab-panel" data-service-tab="job_matching">
+  <button class="back-link" data-goto="home">← 返回服務首頁</button>
+  <div class="service-intro">
+    <div class="eyebrow">快速上架</div>
+    <h2>即時求才媒合</h2>
+    <p>如果您有即時找人的需求，請留下您的職缺資訊。我們可協助免費將職缺上架至台灣就業通，並運用據點的宣傳平台為您曝光。</p>
+  </div>
+
+  <div id="jobmatch-form-wrap">
+  <form id="form-jobmatch" class="panel" data-service="job_matching" novalidate>
+    <div class="section-label">公司資料</div>
+    <div class="row2">
+      <div class="field"><label>公司名稱</label><input type="text" required data-field="companyName" data-label="公司名稱"></div>
+      <div class="field"><label>統一編號</label><input type="text" required data-field="taxId" data-label="統一編號"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>負責人</label><input type="text" required data-field="ownerName" data-label="負責人"></div>
+      <div class="field"><label>聯絡窗口姓名</label><input type="text" required data-field="contactName" data-label="聯絡窗口姓名"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>聯絡電話</label><input type="tel" required data-field="contactPhone" data-label="聯絡電話"></div>
+      <div class="field"><label>公司地址</label><input type="text" required data-field="companyAddress" data-label="公司地址"></div>
+    </div>
+
+    <div class="section-label">職缺內容</div>
+    <div class="row2">
+      <div class="field"><label>職稱</label><input type="text" required data-field="jobTitle" data-label="職稱"></div>
+      <div class="field"><label>需求人數</label><input type="text" required data-field="headcount" data-label="需求人數"></div>
+    </div>
+    <div class="field"><label>職缺說明</label><textarea required data-field="jobOpening" data-label="職缺說明" placeholder="這個職缺主要在做什麼"></textarea></div>
+    <div class="row2">
+      <div class="field"><label>學歷/資格 <span class="opt">(可不填)</span></label><input type="text" data-field="education" data-label="學歷/資格"></div>
+      <div class="field"><label>待遇</label><input type="text" required data-field="salary" data-label="待遇" placeholder="例如：時薪190元 / 月薪32,000起"></div>
+    </div>
+    <div class="field"><label>工作內容</label><textarea required data-field="jobContent" data-label="工作內容"></textarea></div>
+    <div class="row2">
+      <div class="field"><label>工作時間</label><input type="text" required data-field="workTime" data-label="工作時間"></div>
+      <div class="field"><label>工作地點</label><input type="text" required data-field="workLocation" data-label="工作地點"></div>
+    </div>
+    <div class="field"><label>其它備註 <span class="opt">(可不填)</span></label><textarea data-field="otherNotes" data-label="其它備註"></textarea></div>
+
+    <div class="actions-bar">
+      <button type="button" class="btn btn-ghost" data-action="preview">👁️ 預覽</button>
+    </div>
+    <div class="form-msg" data-required-msg style="display:none;"></div>
+  </form>
+  </div>
+
+  <div class="panel" id="preview-job_matching" style="display:none;"></div>
+  <div class="panel" id="thanks-job_matching" style="display:none;"></div>
+</section>
+
+<!-- ===================== 4. 職場體驗 ===================== -->
+<section id="tab-work_experience" class="tab-panel" data-service-tab="work_experience">
+  <button class="back-link" data-goto="home">← 返回服務首頁</button>
+  <div class="service-intro">
+    <div class="eyebrow">社會形象加分 · 免費旅平保險</div>
+    <h2>職場體驗</h2>
+    <p>由企業提供場地及講師，我們募集 20 位有求職意願的民眾，到企業端進行企業介紹，並了解產業的工作內容與性質。宣傳、旅平保險及參加者交通費皆由本據點負責，能有效提升企業的社會友善形象。</p>
+  </div>
+
+  <div class="video-block">
+    <div class="section-label">職場體驗介紹影片</div>
+    <div class="video-frame video-frame-local"><video controls preload="metadata" src="job-t.mp4">您的瀏覽器不支援影片播放，請直接聯繫我們索取介紹影片。</video></div>
+  </div>
+
+  <div id="workexp-form-wrap">
+  <form id="form-workexp" class="panel" data-service="work_experience" novalidate>
+    <div class="section-label">公司資料</div>
+    <div class="row2">
+      <div class="field"><label>公司名稱</label><input type="text" required data-field="companyName" data-label="公司名稱"></div>
+      <div class="field"><label>聯絡窗口姓名</label><input type="text" required data-field="contactName" data-label="聯絡窗口姓名"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>聯絡電話</label><input type="tel" required data-field="contactPhone" data-label="聯絡電話"></div>
+      <div class="field"><label>聯絡地址</label><input type="text" required data-field="companyAddress" data-label="聯絡地址"></div>
+    </div>
+    <div class="field"><label>其它備註 <span class="opt">(可不填)</span></label><textarea data-field="otherNotes" data-label="其它備註"></textarea></div>
+
+    <div class="actions-bar">
+      <button type="button" class="btn btn-ghost" data-action="preview">👁️ 預覽</button>
+    </div>
+    <div class="form-msg" data-required-msg style="display:none;"></div>
+  </form>
+  </div>
+
+  <div class="panel" id="preview-work_experience" style="display:none;"></div>
+  <div class="panel" id="thanks-work_experience" style="display:none;"></div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  基隆市銀髮人才服務據點 ｜ 地址：基隆市仁愛區愛三路9號3樓 ｜ 電話：02-2428-5655 ｜ Email：kcs202355@gmail.com<br>
+  上班時間｜周一至五 08:30-12:30、13:30-17:30（國定與例假日休）
+</footer>
 
 <script>
+const LINE_LINK = 'https://lin.ee/59fVmBR';
+const LINE_QR = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=8&data=' + encodeURIComponent(LINE_LINK);
+
 const SERVICE_LABELS = {
-  coaching: '企業入輔', joint_recruitment: '聯合徵才',
-  job_matching: '即時求才媒合', work_experience: '職場體驗'
+  coaching: '企業入輔（專家入場輔導）',
+  joint_recruitment: '聯合徵才',
+  job_matching: '即時求才媒合',
+  work_experience: '職場體驗'
 };
-let token = sessionStorage.getItem('admin_token') || '';
-let currentService = '';
-let currentStatus = '';
-let cachedRows = [];
 
-function showAdmin(){
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('admin-screen').style.display = 'block';
-  loadList();
-}
-if(token) showAdmin();
-
-document.getElementById('btn-login').addEventListener('click', doLogin);
-document.getElementById('login-password').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-
-async function doLogin(){
-  const password = document.getElementById('login-password').value;
-  const errEl = document.getElementById('login-err');
-  errEl.textContent = '';
-  try{
-    const res = await fetch('/api/admin/login', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ password })
-    });
-    const body = await res.json();
-    if(!res.ok) throw new Error(body.error || '登入失敗');
-    token = body.token;
-    sessionStorage.setItem('admin_token', token);
-    showAdmin();
-  }catch(e){
-    errEl.textContent = e.message;
-  }
-}
-
-document.getElementById('btn-logout').addEventListener('click', ()=>{
-  sessionStorage.removeItem('admin_token');
-  token = '';
-  document.getElementById('admin-screen').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('login-password').value = '';
-});
-
-document.getElementById('service-filter').addEventListener('click', e=>{
-  if(!e.target.matches('[data-service]')) return;
-  document.querySelectorAll('#service-filter .pill-btn').forEach(b=>b.classList.remove('active'));
-  e.target.classList.add('active');
-  currentService = e.target.dataset.service;
-  loadList();
-});
-document.getElementById('status-filter').addEventListener('click', e=>{
-  if(!e.target.matches('[data-status]')) return;
-  document.querySelectorAll('#status-filter .pill-btn').forEach(b=>b.classList.remove('active'));
-  e.target.classList.add('active');
-  currentStatus = e.target.dataset.status;
-  loadList();
-});
-
-async function loadList(){
-  const container = document.getElementById('list-container');
-  container.innerHTML = '<div class="empty-state">載入中...</div>';
-  const params = new URLSearchParams();
-  if(currentService) params.set('service', currentService);
-  if(currentStatus) params.set('status', currentStatus);
-  try{
-    const res = await fetch('/api/admin/submissions?' + params.toString(), {
-      headers:{ Authorization: 'Bearer ' + token }
-    });
-    if(res.status === 401){ handleLoggedOut(); return; }
-    const rows = await res.json();
-    if(!res.ok) throw new Error(rows.error || '讀取失敗');
-    cachedRows = rows;
-    renderList(rows);
-  }catch(e){
-    container.innerHTML = '<div class="empty-state">讀取失敗：' + escapeHtml(e.message) + '</div>';
-  }
-}
-
-function handleLoggedOut(){
-  sessionStorage.removeItem('admin_token');
-  token = '';
-  document.getElementById('admin-screen').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('login-err').textContent = '登入已逾期，請重新登入';
-}
-
-function renderList(rows){
-  const container = document.getElementById('list-container');
-  if(!rows.length){
-    container.innerHTML = '<div class="empty-state">目前沒有符合條件的申請資料</div>';
-    return;
-  }
-  let html = '<table><thead><tr><th>服務</th><th>公司名稱</th><th>聯絡窗口</th><th>電話</th><th>送出時間</th><th>狀態</th></tr></thead><tbody>';
-  rows.forEach(r=>{
-    const d = r.data || {};
-    const company = d.companyName || '';
-    const contact = d.contactName || d.ownerName || '';
-    const phone = d.contactPhone || '';
-    const time = new Date(r.created_at).toLocaleString('zh-TW', { hour12:false });
-    html += `<tr data-id="${r.id}">
-      <td><span class="tag tag-${r.service_type}">${SERVICE_LABELS[r.service_type] || r.service_type}</span></td>
-      <td>${escapeHtml(company)}</td>
-      <td>${escapeHtml(contact)}</td>
-      <td>${escapeHtml(phone)}</td>
-      <td>${time}</td>
-      <td class="status-${r.status}">${r.status === 'new' ? '尚未處理' : '已處理'}</td>
-    </tr>`;
+/* ---------- 分頁切換 ---------- */
+function goto(tab){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.querySelectorAll('#topnav button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.goto===tab);
   });
-  html += '</tbody></table>';
-  container.innerHTML = html;
-  container.querySelectorAll('tr[data-id]').forEach(tr=>{
-    tr.addEventListener('click', ()=> openDetail(tr.dataset.id));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('[data-goto]').forEach(el=>{
+  el.addEventListener('click', ()=> goto(el.dataset.goto));
+});
+
+/* ---------- 聯合徵才：切換活動類型顯示對應影片 ---------- */
+document.querySelectorAll('input[name="joint-eventType"]').forEach(r=>{
+  r.addEventListener('change', ()=>{
+    const smallChecked = document.querySelector('input[name="joint-eventType"][value^="小型"]').checked;
+    const largeChecked = document.querySelector('input[name="joint-eventType"][value^="大型"]').checked;
+    document.getElementById('joint-video-small').style.display = smallChecked ? 'block' : 'none';
+    document.getElementById('joint-video-large').style.display = largeChecked ? 'block' : 'none';
   });
+});
+
+/* ---------- 表單資料收集 ---------- */
+function collectFormData(formEl){
+  const data = {};
+  const previewItems = [];
+  formEl.querySelectorAll('[data-field]').forEach(el=>{
+    const field = el.dataset.field;
+    const label = el.dataset.label || field;
+    const type = el.dataset.type;
+    if(type === 'checkbox-group'){
+      const checked = Array.from(el.querySelectorAll('input:checked')).map(c=>c.value);
+      data[field] = checked;
+      previewItems.push({label, value: checked.join('、'), key: field});
+    } else if(type === 'radio-group'){
+      const checked = el.querySelector('input:checked');
+      data[field] = checked ? checked.value : '';
+      previewItems.push({label, value: data[field], key: field});
+    } else {
+      data[field] = el.value.trim();
+      previewItems.push({label, value: data[field], key: field});
+    }
+  });
+  return { data, previewItems };
 }
 
-function openDetail(id){
-  const row = cachedRows.find(r => String(r.id) === String(id));
-  if(!row) return;
-  const d = row.data || {};
-  const time = new Date(row.created_at).toLocaleString('zh-TW', { hour12:false });
-  const lines = Object.entries(d).map(([k, v])=>{
-    const value = Array.isArray(v) ? v.join('、') : (v || '（未填寫）');
-    return `<div class="detail-line"><div class="dl-label">${escapeHtml(k)}</div><div class="dl-value">${escapeHtml(String(value))}</div></div>`;
-  }).join('');
-  document.getElementById('modal-content').innerHTML = `
-    <h2>${SERVICE_LABELS[row.service_type] || row.service_type}</h2>
-    <div class="modal-sub">送出時間：${time}　｜　編號 #${row.id}</div>
-    ${lines}
-    <div class="modal-actions">
-      ${row.status === 'new'
-        ? `<button class="btn btn-primary" data-mark="handled" data-id="${row.id}">標記為已處理</button>`
-        : `<button class="btn btn-ghost" data-mark="new" data-id="${row.id}">標記為尚未處理</button>`}
-      <button class="btn btn-danger" data-delete="${row.id}">刪除這筆資料</button>
-      <button class="btn btn-ghost" id="btn-close-modal">關閉</button>
+function validateForm(formEl){
+  let ok = true;
+  const missingLabels = [];
+  formEl.querySelectorAll('input[required][data-field], textarea[required][data-field]').forEach(el=>{
+    if(!el.value.trim()){ ok=false; missingLabels.push(el.dataset.label); el.style.borderColor='var(--warn)'; }
+    else{ el.style.borderColor=''; }
+  });
+  formEl.querySelectorAll('[data-type="checkbox-group"]').forEach(group=>{
+    const anyChecked = group.querySelectorAll('input:checked').length > 0;
+    const msg = formEl.querySelector('[data-group-msg="'+group.dataset.field+'"]');
+    if(!anyChecked){ ok=false; if(msg) msg.style.display='block'; missingLabels.push(group.dataset.label); }
+    else if(msg){ msg.style.display='none'; }
+  });
+  formEl.querySelectorAll('[data-type="radio-group"]').forEach(group=>{
+    const anyChecked = group.querySelectorAll('input:checked').length > 0;
+    const msg = formEl.querySelector('[data-group-msg="'+group.dataset.field+'"]');
+    if(!anyChecked){ ok=false; if(msg) msg.style.display='block'; missingLabels.push(group.dataset.label); }
+    else if(msg){ msg.style.display='none'; }
+  });
+  const msgEl = formEl.querySelector('[data-required-msg]');
+  if(!ok){
+    msgEl.style.display='block';
+    msgEl.textContent = '⚠️ 尚有必填欄位未完成，請往上檢查標示為紅色的欄位';
+  } else {
+    msgEl.style.display='none';
+  }
+  return ok;
+}
+
+/* ---------- 預覽畫面 ---------- */
+function renderPreview(serviceId, previewItems, formWrapEl, previewEl){
+  const rows = previewItems
+    .filter(it => it.value)
+    .map(it => `<div class="preview-line"><div class="pl-label">${it.label}</div><div class="pl-value">${escapeHtml(it.value)}</div></div>`)
+    .join('');
+  previewEl.innerHTML = `
+    <div class="section-label">內容預覽</div>
+    ${rows}
+    <div class="actions-bar">
+      <button type="button" class="btn btn-ghost" data-back-edit="${serviceId}">✏️ 返回修改</button>
+      <button type="button" class="btn btn-primary" data-confirm-submit="${serviceId}">✅ 確認送出</button>
     </div>
   `;
-  document.getElementById('modal-backdrop').classList.add('show');
+  formWrapEl.style.display = 'none';
+  previewEl.style.display = 'block';
+  previewEl.scrollIntoView({behavior:'smooth'});
 }
-
-document.getElementById('modal-backdrop').addEventListener('click', async (e)=>{
-  if(e.target.id === 'modal-backdrop' || e.target.id === 'btn-close-modal'){
-    document.getElementById('modal-backdrop').classList.remove('show');
-    return;
-  }
-  if(e.target.matches('[data-mark]')){
-    const id = e.target.dataset.id;
-    const status = e.target.dataset.mark;
-    await fetch('/api/admin/submissions/' + id, {
-      method:'PATCH',
-      headers:{ 'Content-Type':'application/json', Authorization:'Bearer ' + token },
-      body: JSON.stringify({ status })
-    });
-    document.getElementById('modal-backdrop').classList.remove('show');
-    loadList();
-  }
-  if(e.target.matches('[data-delete]')){
-    if(!confirm('確定要永久刪除這筆申請資料嗎？此動作無法復原。')) return;
-    const id = e.target.dataset.delete;
-    await fetch('/api/admin/submissions/' + id, {
-      method:'DELETE',
-      headers:{ Authorization:'Bearer ' + token }
-    });
-    document.getElementById('modal-backdrop').classList.remove('show');
-    loadList();
-  }
-});
 
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
+
+/* ---------- 感謝畫面 ---------- */
+function renderThanks(serviceId, thanksEl, previewEl){
+  previewEl.style.display = 'none';
+  thanksEl.innerHTML = `
+    <div class="thanks">
+      <div class="check">✓</div>
+      <h3>感謝您的申請</h3>
+      <p>我們已經收到您送出的「${SERVICE_LABELS[serviceId]}」資料，專員將盡快與您聯繫，請留意來電或 LINE 訊息。</p>
+      <div class="line-box">
+        <img src="${LINE_QR}" alt="官方 LINE QR Code">
+        <div class="lb-text">
+          <div class="lb-title">加入官方 LINE</div>
+          <div>追蹤後續進度及線上專員服務</div>
+          <a href="${LINE_LINK}" target="_blank" rel="noopener">${LINE_LINK}</a>
+        </div>
+      </div>
+      <div class="contact-footer">
+        基隆市銀髮人才服務據點｜基隆市仁愛區愛三路9號3樓<br>
+        電話｜02-2428-5655　　Email｜kcs202355@gmail.com<br>
+        上班時間｜周一至五 08:30-12:30、13:30-17:30（國定與例假日休）
+      </div>
+      <button type="button" class="btn btn-ghost btn-restart" data-goto="home">回到服務首頁</button>
+    </div>
+  `;
+  thanksEl.style.display = 'block';
+  thanksEl.querySelectorAll('[data-goto]').forEach(el=> el.addEventListener('click', ()=> goto(el.dataset.goto)));
+  thanksEl.scrollIntoView({behavior:'smooth'});
+}
+
+/* ---------- 綁定四個表單 ---------- */
+function setupForm(formId, serviceId){
+  const formEl = document.getElementById(formId);
+  const formWrapEl = formEl.parentElement;
+  const previewEl = document.getElementById('preview-'+serviceId);
+  const thanksEl = document.getElementById('thanks-'+serviceId);
+  let lastData = null;
+
+  formEl.querySelector('[data-action="preview"]').addEventListener('click', ()=>{
+    if(!validateForm(formEl)) return;
+    const { data, previewItems } = collectFormData(formEl);
+    lastData = data;
+    renderPreview(serviceId, previewItems, formWrapEl, previewEl);
+  });
+
+  previewEl.addEventListener('click', async (e)=>{
+    if(e.target.matches('[data-back-edit]')){
+      previewEl.style.display='none';
+      formWrapEl.style.display='block';
+      formWrapEl.scrollIntoView({behavior:'smooth'});
+    }
+    if(e.target.matches('[data-confirm-submit]')){
+      e.target.disabled = true;
+      e.target.textContent = '送出中...';
+      try{
+        const res = await fetch('/api/submit', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ serviceType: serviceId, data: lastData })
+        });
+        if(!res.ok) throw new Error('送出失敗');
+        renderThanks(serviceId, thanksEl, previewEl);
+        formEl.reset();
+      }catch(err){
+        e.target.disabled = false;
+        e.target.textContent = '✅ 確認送出';
+        alert('送出失敗，請確認網路連線後再試一次。若持續失敗，請直接電洽 02-2428-5655。');
+      }
+    }
+  });
+}
+
+setupForm('form-coaching', 'coaching');
+setupForm('form-joint', 'joint_recruitment');
+setupForm('form-jobmatch', 'job_matching');
+setupForm('form-workexp', 'work_experience');
 </script>
 </body>
 </html>
