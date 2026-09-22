@@ -54,9 +54,13 @@ async function initDb() {
       session_id TEXT NOT NULL,
       path TEXT,
       referrer TEXT,
+      utm_source TEXT,
+      utm_campaign TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
   `);
+  await pool.query(`ALTER TABLE page_views ADD COLUMN IF NOT EXISTS utm_source TEXT;`);
+  await pool.query(`ALTER TABLE page_views ADD COLUMN IF NOT EXISTS utm_campaign TEXT;`);
   await pool.query(`
     CREATE TABLE IF NOT EXISTS visitor_sessions (
       session_id TEXT PRIMARY KEY,
@@ -123,13 +127,28 @@ function classifyReferrer(referrer) {
   }
 }
 
+// 常見 utm_source 的中文顯示名稱；沒對應到的會直接顯示原始代碼，
+// 所以之後想開新的追蹤通路，直接在連結上換一組新的 utm_source 即可，不需要改程式碼。
+const UTM_SOURCE_LABELS = {
+  fb_post: 'Facebook 粉專貼文',
+  fb_group: 'Facebook 社團分享',
+  dm_qr: 'DM文宣 QR code',
+  line_oa: '官方LINE自動回覆'
+};
+function classifySource(referrer, utmSource) {
+  if (utmSource) {
+    return UTM_SOURCE_LABELS[utmSource] || ('追蹤連結：' + utmSource);
+  }
+  return classifyReferrer(referrer);
+}
+
 app.post('/api/track', async (req, res) => {
   try {
-    const { sessionId, path: pagePath, referrer } = req.body || {};
+    const { sessionId, path: pagePath, referrer, utmSource, utmCampaign } = req.body || {};
     if (!sessionId) return res.status(400).json({ error: '缺少 sessionId' });
     await pool.query(
-      'INSERT INTO page_views (session_id, path, referrer) VALUES ($1, $2, $3)',
-      [sessionId, pagePath || '/', referrer || null]
+      'INSERT INTO page_views (session_id, path, referrer, utm_source, utm_campaign) VALUES ($1, $2, $3, $4, $5)',
+      [sessionId, pagePath || '/', referrer || null, utmSource || null, utmCampaign || null]
     );
     await pool.query(
       `INSERT INTO visitor_sessions (session_id, last_seen) VALUES ($1, NOW())
@@ -264,18 +283,18 @@ app.get('/api/admin/analytics', requireAdmin, async (req, res) => {
       pool.query('SELECT COUNT(*)::int AS count FROM page_views'),
       pool.query(`SELECT COUNT(*)::int AS count FROM page_views WHERE created_at >= date_trunc('day', NOW())`),
       pool.query(`SELECT COUNT(*)::int AS count FROM visitor_sessions WHERE last_seen >= NOW() - INTERVAL '60 seconds'`),
-      pool.query('SELECT referrer FROM page_views')
+      pool.query('SELECT referrer, utm_source FROM page_views')
     ]);
 
     const referrerCounts = {};
     referrerRes.rows.forEach(row => {
-      const label = classifyReferrer(row.referrer);
+      const label = classifySource(row.referrer, row.utm_source);
       referrerCounts[label] = (referrerCounts[label] || 0) + 1;
     });
     const referrers = Object.entries(referrerCounts)
       .map(([label, count]) => ({ label, count }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 10);
+      .slice(0, 12);
 
     res.json({
       totalViews: totalRes.rows[0].count,
@@ -286,6 +305,68 @@ app.get('/api/admin/analytics', requireAdmin, async (req, res) => {
   } catch (e) {
     console.error('讀取統計失敗', e);
     res.status(500).json({ error: '讀取統計失敗' });
+  }
+});
+
+app.get('/api/admin/analytics/daily', requireAdmin, async (req, res) => {
+  try {
+    const days = Math.min(365, Math.max(1, parseInt(req.query.days, 10) || 30));
+    const result = await pool.query(
+      `SELECT to_char(date_trunc('day', created_at), 'YYYY-MM-DD') AS date, COUNT(*)::int AS count
+       FROM page_views
+       WHERE created_at >= NOW() - ($1 || ' days')::interval
+       GROUP BY 1 ORDER BY 1`,
+      [days]
+    );
+    // 補齊沒有造訪紀錄的日期，讓曲線圖不會斷點
+    const map = {};
+    result.rows.forEach(r => { map[r.date] = r.count; });
+    const series = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      series.push({ date: key, count: map[key] || 0 });
+    }
+    res.json({ series });
+  } catch (e) {
+    console.error('讀取趨勢資料失敗', e);
+    res.status(500).json({ error: '讀取趨勢資料失敗' });
+  }
+});
+
+app.get('/api/admin/analytics/export', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT referrer, utm_source, created_at FROM page_views ORDER BY created_at');
+    const monthly = {}; // { 'YYYY-MM': { total, bySource: {label: count} } }
+    result.rows.forEach(row => {
+      const ym = row.created_at.toISOString().slice(0, 7);
+      const label = classifySource(row.referrer, row.utm_source);
+      if (!monthly[ym]) monthly[ym] = { total: 0, bySource: {} };
+      monthly[ym].total += 1;
+      monthly[ym].bySource[label] = (monthly[ym].bySource[label] || 0) + 1;
+    });
+
+    const lines = [];
+    lines.push('月份,來源,造訪人次');
+    Object.keys(monthly).sort().forEach(ym => {
+      const m = monthly[ym];
+      lines.push(`${ym},總計,${m.total}`);
+      Object.entries(m.bySource)
+        .sort((a, b) => b[1] - a[1])
+        .forEach(([label, count]) => {
+          const safeLabel = '"' + String(label).replace(/"/g, '""') + '"';
+          lines.push(`${ym},${safeLabel},${count}`);
+        });
+    });
+    const csv = '\uFEFF' + lines.join('\n'); // 加上 BOM，Excel 開啟中文才不會亂碼
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="visitor-report.csv"');
+    res.send(csv);
+  } catch (e) {
+    console.error('匯出報表失敗', e);
+    res.status(500).json({ error: '匯出報表失敗' });
   }
 });
 
