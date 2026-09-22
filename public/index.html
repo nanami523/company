@@ -561,6 +561,31 @@
 </footer>
 
 <script>
+/* ---------- 訪客計數（頁面瀏覽 + 在線心跳） ---------- */
+(function(){
+  let sessionId = sessionStorage.getItem('kcs_session_id');
+  if(!sessionId){
+    sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+    sessionStorage.setItem('kcs_session_id', sessionId);
+  }
+  fetch('/api/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId, path: location.pathname, referrer: document.referrer || '' })
+  }).catch(()=>{});
+
+  function heartbeat(){
+    if(document.visibilityState === 'visible'){
+      fetch('/api/heartbeat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId })
+      }).catch(()=>{});
+    }
+  }
+  setInterval(heartbeat, 20000);
+})();
+
 const LINE_LINK = 'https://lin.ee/59fVmBR';
 const LINE_QR = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=' + encodeURIComponent(LINE_LINK);
 document.querySelectorAll('.lr-qr').forEach(img => img.src = LINE_QR);
@@ -741,7 +766,7 @@ function jobEntryHtml(idx){
       </div>
       <div class="row2">
         <div class="field"><label>學歷/資格 <span class="opt">(可不填)</span></label><input type="text" class="je-education"></div>
-        <div class="field"><label>待遇</label><input type="text" class="je-salary" required placeholder="例：時薪250元 / 月薪32,000元（勿低於最低工資）"></div>
+        <div class="field"><label>待遇</label><input type="text" class="je-salary" required placeholder="例如：時薪250元 / 月薪32,000元起（請依最新法定基本工資填寫）"></div>
       </div>
       <div class="field"><label>工作內容</label><textarea class="je-jobContent" required></textarea></div>
       <div class="field"><label>工作時間 <span class="opt">（可填三班制等詳細班表）</span></label><textarea class="je-workTime tall" required placeholder="例如：日班 08:00-17:00／小夜班 16:00-24:00／大夜班 00:00-08:00"></textarea></div>
