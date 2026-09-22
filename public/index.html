@@ -144,6 +144,18 @@
   .je-remove{ background:none; border:none; color:var(--warn); font-size:12.5px; cursor:pointer; font-weight:700; }
   .loc-block{ border-top:1px dashed var(--line); padding-top:12px; margin-top:12px; }
   .loc-block .loc-label{ font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-bottom:8px; }
+  .loc-row{ display:flex; gap:10px; align-items:flex-start; margin-bottom:10px; }
+  .loc-row .field{ margin-bottom:0; flex:1; min-width:0; }
+  @media (max-width:640px){ .loc-row{ flex-wrap:wrap; } }
+  .loc-remove{
+    flex:0 0 auto; background:#fff; border:1px solid var(--line); color:var(--warn); border-radius:8px;
+    width:38px; height:38px; cursor:pointer; font-size:14px; margin-top:0;
+  }
+  .add-loc-btn{
+    border:1px dashed var(--teal); background:#fff; color:var(--teal); border-radius:9px;
+    padding:8px 14px; font-size:13px; font-weight:700; cursor:pointer; margin-top:2px;
+  }
+  .add-loc-btn:hover{ background:var(--accent-soft); }
   .add-job-btn{ width:100%; border:2px dashed var(--teal); background:#fff; color:var(--teal); border-radius:12px; padding:13px; font-size:14px; font-weight:800; cursor:pointer; margin-bottom:20px; }
   .add-job-btn:hover{ background:var(--accent-soft); }
 
@@ -327,11 +339,13 @@
               </div>
       <div class="form-msg" data-group-msg="topics" style="display:none;">請至少選擇一項想入輔的內容</div>
     </div>
- <div class="section-label">入輔方式（可複選）</div>
+    <div class="section-label">入輔方式</div>
     <div class="field">
-      <div class="radio-list" data-field="topics" data-label="入輔方式" data-type="radio-group">
-        <label><input type="radio" name="coaching-topics" value="專人至企業地址入輔"> 專人至企業地址入輔</label>
-      <label><input type="radio" name="coaching-topics" value="公司派員至基隆銀髮據點入輔">公司派員至基隆銀髮據點入輔</label>
+      <div class="checkbox-list" data-field="coachingMethod" data-label="入輔方式" data-type="radio-group">
+        <label><input type="radio" name="coaching-method" value="專人至企業地址入輔"> 專人至企業地址入輔</label>
+        <label><input type="radio" name="coaching-method" value="公司派員至基隆銀髮據點入輔"> 公司派員至基隆銀髮據點入輔</label>
+      </div>
+      <div class="form-msg" data-group-msg="coachingMethod" style="display:none;">請選擇入輔方式</div>
     </div>
     <div class="field">
       <label>其它需求或建議 <span class="opt">(非必填)</span></label>
@@ -393,7 +407,9 @@
     <div class="form-msg" data-group-msg="eventType" style="display:none;">請選擇活動類型</div>
 
     <div class="section-label">活動花絮回顧</div>
-    <div class="video-box" style="border-radius:12px;margin-bottom:20px;"><video controls preload="metadata" src="job-fb.mp4">您的瀏覽器不支援影片播放。</video></div>
+    <div id="joint-video-small" class="video-box" style="border-radius:12px;margin-bottom:20px;display:none;"><video controls preload="metadata" src="job-f.mp4">您的瀏覽器不支援影片播放。</video></div>
+    <div id="joint-video-large" class="video-box" style="border-radius:12px;margin-bottom:20px;display:none;"><video controls preload="metadata" src="job-fb.mp4">您的瀏覽器不支援影片播放。</video></div>
+    <div id="joint-video-hint" style="margin-bottom:20px;font-size:13px;color:var(--ink-soft);">請先在上方選擇活動類型，即可觀看對應的活動花絮影片</div>
 
     <div class="section-label">廠商資料</div>
     <div class="row2">
@@ -537,8 +553,9 @@
       <p class="phone-num">02-2428-5655</p>
       <p>kcs202355@gmail.com</p>
     </div>
-    <div>
+    <div style="text-align:center;">
       <img class="footer-qr lr-qr" alt="官方 LINE QR Code">
+      <p style="margin:6px 0 0;font-size:12.5px;color:#dce8e0;">LINE 官方帳號</p>
     </div>
   </div>
 </footer>
@@ -566,6 +583,17 @@ function goto(tab){
 }
 document.querySelectorAll('[data-goto]').forEach(el=>{
   el.addEventListener('click', ()=> goto(el.dataset.goto));
+});
+
+/* ---------- 聯合徵才：依活動類型切換對應影片 ---------- */
+document.querySelectorAll('input[name="joint-eventType"]').forEach(r=>{
+  r.addEventListener('change', ()=>{
+    const smallChecked = document.querySelector('input[name="joint-eventType"][value^="小型"]').checked;
+    const largeChecked = document.querySelector('input[name="joint-eventType"][value^="大型"]').checked;
+    document.getElementById('joint-video-small').style.display = smallChecked ? 'block' : 'none';
+    document.getElementById('joint-video-large').style.display = largeChecked ? 'block' : 'none';
+    document.getElementById('joint-video-hint').style.display = (smallChecked || largeChecked) ? 'none' : 'block';
+  });
 });
 
 /* ============================================================
@@ -667,27 +695,38 @@ function districtOptions(county, selected){
   const list = county && COUNTY_DISTRICTS[county] ? ["全區", ...COUNTY_DISTRICTS[county]] : ["全區"];
   return list.map(d => `<option value="${d}"${d===selected?' selected':''}>${d}</option>`).join('');
 }
-function locationBlockHtml(idx, locIdx, requiredCounty){
-  const reqStar = requiredCounty ? '（必填縣市）' : '（可不填）';
+function locationRowHtml(required){
   return `
-    <div class="loc-block" data-loc="${locIdx}">
-      <div class="loc-label">工作地點${['一','二','三'][locIdx]} ${reqStar}</div>
-      <div class="row3">
-        <div class="field" style="margin-bottom:8px;">
-          <select class="loc-county" ${requiredCounty ? 'required' : ''}>
-            <option value="">請選擇縣市</option>
-            ${countyOptions('')}
-          </select>
-        </div>
-        <div class="field" style="margin-bottom:8px;">
-          <select class="loc-district"><option value="">行政區（可不填）</option></select>
-        </div>
-        <div class="field" style="margin-bottom:8px;">
-          <input type="text" class="loc-street" placeholder="路／街道／巷弄門牌（可不填）">
-        </div>
+    <div class="loc-row">
+      <div class="field">
+        <select class="loc-county" ${required ? 'required' : ''}>
+          <option value="">${required ? '請選擇縣市' : '縣市（可不填）'}</option>
+          ${countyOptions('')}
+        </select>
       </div>
+      <div class="field">
+        <select class="loc-district"><option value="">行政區（可不填）</option></select>
+      </div>
+      <div class="field">
+        <input type="text" class="loc-street" placeholder="路／街道／巷弄門牌（可不填）">
+      </div>
+      <button type="button" class="loc-remove" ${required ? 'style="visibility:hidden;"' : ''} title="移除此地點">✕</button>
     </div>
   `;
+}
+function addLocationRow(listEl, required){
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = locationRowHtml(required);
+  const rowEl = wrapper.firstElementChild;
+  listEl.appendChild(rowEl);
+  const countySel = rowEl.querySelector('.loc-county');
+  const districtSel = rowEl.querySelector('.loc-district');
+  countySel.addEventListener('change', ()=>{
+    districtSel.innerHTML = '<option value="">行政區（可不填）</option>' + districtOptions(countySel.value, '');
+  });
+  if(!required){
+    rowEl.querySelector('.loc-remove').addEventListener('click', ()=> rowEl.remove());
+  }
 }
 function jobEntryHtml(idx){
   return `
@@ -702,14 +741,16 @@ function jobEntryHtml(idx){
       </div>
       <div class="row2">
         <div class="field"><label>學歷/資格 <span class="opt">(可不填)</span></label><input type="text" class="je-education"></div>
-        <div class="field"><label>待遇</label><input type="text" class="je-salary" required placeholder="例如：時薪190元 / 月薪32,000起"></div>
+        <div class="field"><label>待遇</label><input type="text" class="je-salary" required placeholder="例如：時薪250元 / 月薪32,000元起（請依最新法定基本工資填寫）"></div>
       </div>
       <div class="field"><label>工作內容</label><textarea class="je-jobContent" required></textarea></div>
       <div class="field"><label>工作時間 <span class="opt">（可填三班制等詳細班表）</span></label><textarea class="je-workTime tall" required placeholder="例如：日班 08:00-17:00／小夜班 16:00-24:00／大夜班 00:00-08:00"></textarea></div>
 
-      ${locationBlockHtml(idx, 0, true)}
-      ${locationBlockHtml(idx, 1, false)}
-      ${locationBlockHtml(idx, 2, false)}
+      <div class="loc-block">
+        <div class="loc-label">工作地點（第一筆縣市為必填，可點「新增地點」增加多個地點）</div>
+        <div class="loc-list" data-loc-list></div>
+        <button type="button" class="add-loc-btn" data-add-loc>＋ 新增地點</button>
+      </div>
 
       <div class="simple-check">
         <input type="checkbox" class="je-dispatch-residence">
@@ -725,12 +766,10 @@ function jobEntryHtml(idx){
   `;
 }
 function bindLocationDropdowns(jobEntryEl){
-  jobEntryEl.querySelectorAll('.loc-block').forEach(block=>{
-    const countySel = block.querySelector('.loc-county');
-    const districtSel = block.querySelector('.loc-district');
-    countySel.addEventListener('change', ()=>{
-      districtSel.innerHTML = '<option value="">行政區（可不填）</option>' + districtOptions(countySel.value, '');
-    });
+  const locList = jobEntryEl.querySelector('[data-loc-list]');
+  addLocationRow(locList, true); // 第一筆地點為必填
+  jobEntryEl.querySelector('[data-add-loc]').addEventListener('click', ()=>{
+    addLocationRow(locList, false);
   });
 }
 function addJobEntry(){
@@ -762,14 +801,11 @@ addJobEntry(); // 預設先給一筆
 function collectJobEntries(){
   const jobs = [];
   document.querySelectorAll('#jobEntries .job-entry').forEach(entry=>{
-    const locations = [0,1,2].map(i=>{
-      const block = entry.querySelector(`.loc-block[data-loc="${i}"]`);
-      return {
-        county: block.querySelector('.loc-county').value.trim(),
-        district: block.querySelector('.loc-district').value.trim(),
-        street: block.querySelector('.loc-street').value.trim()
-      };
-    }).filter(l => l.county || l.district || l.street);
+    const locations = Array.from(entry.querySelectorAll('.loc-row')).map(row=>({
+      county: row.querySelector('.loc-county').value.trim(),
+      district: row.querySelector('.loc-district').value.trim(),
+      street: row.querySelector('.loc-street').value.trim()
+    })).filter(l => l.county || l.district || l.street);
     jobs.push({
       jobTitle: entry.querySelector('.je-jobTitle').value.trim(),
       headcount: entry.querySelector('.je-headcount').value.trim(),
@@ -801,7 +837,7 @@ function renderJobsPreview(jobs){
   return jobs.map((job, i)=>{
     const locLines = job.locations.map((l,li)=>{
       const parts = [l.county, l.district, l.street].filter(Boolean);
-      return parts.length ? `地點${['一','二','三'][li]}：${parts.join(' ')}` : '';
+      return parts.length ? `地點${li+1}：${parts.join(' ')}` : '';
     }).filter(Boolean).join('<br>');
     const dispatch = [
       job.dispatchByResidence ? '依居住區域派案' : '',
