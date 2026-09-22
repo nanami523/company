@@ -351,19 +351,20 @@ app.get('/api/admin/analytics/export', requireAdmin, async (req, res) => {
     lines.push('月份,來源,造訪人次');
     Object.keys(monthly).sort().forEach(ym => {
       const m = monthly[ym];
-      lines.push(`${ym},總計,${m.total}`);
+      const ymDisplay = ym.replace(/^(\d{4})-(\d{2})$/, '$1年$2月'); // 避免 Excel 自動誤判成日期格式
+      lines.push(`${ymDisplay},總計,${m.total}`);
       Object.entries(m.bySource)
         .sort((a, b) => b[1] - a[1])
         .forEach(([label, count]) => {
           const safeLabel = '"' + String(label).replace(/"/g, '""') + '"';
-          lines.push(`${ym},${safeLabel},${count}`);
+          lines.push(`${ymDisplay},${safeLabel},${count}`);
         });
     });
-    const csv = '\uFEFF' + lines.join('\n'); // 加上 BOM，Excel 開啟中文才不會亂碼
+    const csv = '\uFEFF' + lines.join('\r\n'); // BOM + CRLF 換行，windows Excel 相容性最好
 
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename="visitor-report.csv"');
-    res.send(csv);
+    res.send(Buffer.from(csv, 'utf8')); // 明確轉成 UTF-8 Buffer，避免編碼被中途換掉
   } catch (e) {
     console.error('匯出報表失敗', e);
     res.status(500).json({ error: '匯出報表失敗' });
