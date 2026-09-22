@@ -88,6 +88,21 @@
   .btn-primary{ background:var(--accent); color:#fff; }
   .btn-ghost{ background:#fff; color:var(--accent-dark); border:1px solid var(--accent); }
   .btn-danger{ background:#fff; color:var(--warn); border:1px solid var(--warn); }
+
+  .stat-cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px; }
+  @media (max-width:700px){ .stat-cards{ grid-template-columns:1fr; } }
+  .stat-card{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:20px; text-align:center; }
+  .stat-label{ font-size:12.5px; color:var(--ink-soft); font-weight:700; margin-bottom:8px; }
+  .stat-value{ font-size:34px; font-weight:800; color:var(--accent-dark); }
+  .stat-sub{ font-size:11px; color:#a39a88; margin-top:4px; }
+  .referrer-panel{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:20px 22px; }
+  .referrer-title{ font-size:13px; font-weight:700; color:var(--ink-soft); margin-bottom:14px; }
+  .referrer-row{ margin-bottom:12px; }
+  .referrer-row-top{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px; }
+  .referrer-row-top .rr-label{ color:var(--ink); font-weight:600; }
+  .referrer-row-top .rr-count{ color:var(--ink-soft); }
+  .referrer-bar-track{ background:#f0ede4; border-radius:99px; height:8px; overflow:hidden; }
+  .referrer-bar-fill{ background:var(--accent); height:100%; border-radius:99px; }
 </style>
 </head>
 <body>
@@ -110,19 +125,48 @@
     <button id="btn-logout">登出</button>
   </header>
   <main>
-    <div class="filter-bar" id="service-filter">
-      <button class="pill-btn active" data-service="">全部服務</button>
-      <button class="pill-btn" data-service="coaching">企業入輔</button>
-      <button class="pill-btn" data-service="joint_recruitment">聯合徵才</button>
-      <button class="pill-btn" data-service="job_matching">即時求才媒合</button>
-      <button class="pill-btn" data-service="work_experience">職場體驗</button>
+    <div class="filter-bar" id="view-toggle">
+      <button class="pill-btn active" data-view="submissions">📋 申請資料</button>
+      <button class="pill-btn" data-view="analytics">📊 訪客統計</button>
     </div>
-    <div class="filter-bar" id="status-filter">
-      <button class="pill-btn active" data-status="">全部狀態</button>
-      <button class="pill-btn" data-status="new">尚未處理</button>
-      <button class="pill-btn" data-status="handled">已處理</button>
+
+    <div id="submissions-view">
+      <div class="filter-bar" id="service-filter">
+        <button class="pill-btn active" data-service="">全部服務</button>
+        <button class="pill-btn" data-service="coaching">企業入輔</button>
+        <button class="pill-btn" data-service="joint_recruitment">聯合徵才</button>
+        <button class="pill-btn" data-service="job_matching">即時求才媒合</button>
+        <button class="pill-btn" data-service="work_experience">職場體驗</button>
+      </div>
+      <div class="filter-bar" id="status-filter">
+        <button class="pill-btn active" data-status="">全部狀態</button>
+        <button class="pill-btn" data-status="new">尚未處理</button>
+        <button class="pill-btn" data-status="handled">已處理</button>
+      </div>
+      <div id="list-container"></div>
     </div>
-    <div id="list-container"></div>
+
+    <div id="analytics-view" style="display:none;">
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-label">🟢 目前在線人數</div>
+          <div class="stat-value" id="stat-online">—</div>
+          <div class="stat-sub">每 15 秒自動更新</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">今日造訪人次</div>
+          <div class="stat-value" id="stat-today">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">累計造訪人次</div>
+          <div class="stat-value" id="stat-total">—</div>
+        </div>
+      </div>
+      <div class="referrer-panel">
+        <div class="referrer-title">訪客來源比例</div>
+        <div id="referrer-list"></div>
+      </div>
+    </div>
   </main>
 </div>
 
@@ -140,6 +184,7 @@ let token = sessionStorage.getItem('admin_token') || '';
 let currentService = '';
 let currentStatus = '';
 let cachedRows = [];
+let analyticsPollTimer = null;
 
 function showAdmin(){
   document.getElementById('login-screen').style.display = 'none';
@@ -147,6 +192,50 @@ function showAdmin(){
   loadList();
 }
 if(token) showAdmin();
+
+document.getElementById('view-toggle').addEventListener('click', e=>{
+  const btn = e.target.closest('[data-view]');
+  if(!btn) return;
+  document.querySelectorAll('#view-toggle .pill-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const view = btn.dataset.view;
+  document.getElementById('submissions-view').style.display = view === 'submissions' ? 'block' : 'none';
+  document.getElementById('analytics-view').style.display = view === 'analytics' ? 'block' : 'none';
+  if(view === 'analytics'){
+    loadAnalytics();
+    if(analyticsPollTimer) clearInterval(analyticsPollTimer);
+    analyticsPollTimer = setInterval(loadAnalytics, 15000);
+  } else if(analyticsPollTimer){
+    clearInterval(analyticsPollTimer);
+    analyticsPollTimer = null;
+  }
+});
+
+async function loadAnalytics(){
+  try{
+    const res = await fetch('/api/admin/analytics', { headers:{ Authorization: 'Bearer ' + token } });
+    if(res.status === 401){ handleLoggedOut(); return; }
+    const stats = await res.json();
+    if(!res.ok) throw new Error(stats.error || '讀取失敗');
+    document.getElementById('stat-online').textContent = stats.onlineCount;
+    document.getElementById('stat-today').textContent = stats.todayViews;
+    document.getElementById('stat-total').textContent = stats.totalViews;
+    const maxCount = Math.max(1, ...stats.referrers.map(r => r.count));
+    const listEl = document.getElementById('referrer-list');
+    if(!stats.referrers.length){
+      listEl.innerHTML = '<div class="empty-state" style="padding:20px 0;">目前還沒有造訪紀錄</div>';
+    } else {
+      listEl.innerHTML = stats.referrers.map(r => `
+        <div class="referrer-row">
+          <div class="referrer-row-top"><span class="rr-label">${escapeHtml(r.label)}</span><span class="rr-count">${r.count} 次</span></div>
+          <div class="referrer-bar-track"><div class="referrer-bar-fill" style="width:${Math.round(r.count / maxCount * 100)}%"></div></div>
+        </div>
+      `).join('');
+    }
+  }catch(e){
+    console.error('讀取統計失敗', e);
+  }
+}
 
 document.getElementById('btn-login').addEventListener('click', doLogin);
 document.getElementById('login-password').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
@@ -173,6 +262,7 @@ async function doLogin(){
 document.getElementById('btn-logout').addEventListener('click', ()=>{
   sessionStorage.removeItem('admin_token');
   token = '';
+  if(analyticsPollTimer){ clearInterval(analyticsPollTimer); analyticsPollTimer = null; }
   document.getElementById('admin-screen').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('login-password').value = '';
@@ -250,14 +340,51 @@ function renderList(rows){
   });
 }
 
+const FIELD_LABELS = {
+  companyName:'公司名稱', taxId:'統一編號', ownerName:'負責人', contactName:'聯絡窗口姓名',
+  contactPhone:'聯絡電話', companyEmail:'電子信箱 E-mail', companyAddress:'公司地址／聯絡地址',
+  topics:'想入輔的內容', otherNeeds:'其它需求或建議', preferredTime:'希望入輔時間及日期',
+  eventType:'活動類型', preferredDate:'需求月份及日期', otherNotes:'其它備註', jobs:'職缺內容',
+  coachingMethod:'入輔方式'
+};
+function jobsToHtml(jobs){
+  if(!Array.isArray(jobs) || !jobs.length) return '<div class="detail-line"><div class="dl-value">（未填寫）</div></div>';
+  return jobs.map((job, i)=>{
+    const locLines = (job.locations||[]).map((l,li)=>{
+      const parts = [l.county, l.district, l.street].filter(Boolean);
+      return parts.length ? `地點${li+1}：${parts.join(' ')}` : '';
+    }).filter(Boolean).join('<br>');
+    const dispatch = [
+      job.dispatchByResidence ? '依居住區域派案' : '',
+      job.dispatchByAssignedArea ? '依指定地區派案' : ''
+    ].filter(Boolean).join('、');
+    return `
+      <div style="border:1px solid #e4ddce;border-radius:8px;padding:12px 14px;margin-bottom:10px;background:#fbfaf6;">
+        <div style="font-weight:700;color:#164f41;margin-bottom:6px;">職缺 ${i+1}：${escapeHtml(job.jobTitle||'')}</div>
+        <div class="detail-line"><div class="dl-label">需求人數</div><div class="dl-value">${escapeHtml(job.headcount||'')}</div></div>
+        ${job.education ? `<div class="detail-line"><div class="dl-label">學歷/資格</div><div class="dl-value">${escapeHtml(job.education)}</div></div>` : ''}
+        <div class="detail-line"><div class="dl-label">待遇</div><div class="dl-value">${escapeHtml(job.salary||'')}</div></div>
+        <div class="detail-line"><div class="dl-label">工作內容</div><div class="dl-value">${escapeHtml(job.jobContent||'')}</div></div>
+        <div class="detail-line"><div class="dl-label">工作時間</div><div class="dl-value">${escapeHtml(job.workTime||'')}</div></div>
+        ${locLines ? `<div class="detail-line"><div class="dl-label">工作地點</div><div class="dl-value">${locLines}</div></div>` : ''}
+        ${dispatch ? `<div class="detail-line"><div class="dl-label">派案方式</div><div class="dl-value">${escapeHtml(dispatch)}</div></div>` : ''}
+        ${job.otherNotes ? `<div class="detail-line"><div class="dl-label">其它備註</div><div class="dl-value">${escapeHtml(job.otherNotes)}</div></div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
 function openDetail(id){
   const row = cachedRows.find(r => String(r.id) === String(id));
   if(!row) return;
   const d = row.data || {};
   const time = new Date(row.created_at).toLocaleString('zh-TW', { hour12:false });
   const lines = Object.entries(d).map(([k, v])=>{
+    const label = FIELD_LABELS[k] || k;
+    if(k === 'jobs'){
+      return `<div class="detail-line"><div class="dl-label">${escapeHtml(label)}</div></div>${jobsToHtml(v)}`;
+    }
     const value = Array.isArray(v) ? v.join('、') : (v || '（未填寫）');
-    return `<div class="detail-line"><div class="dl-label">${escapeHtml(k)}</div><div class="dl-value">${escapeHtml(String(value))}</div></div>`;
+    return `<div class="detail-line"><div class="dl-label">${escapeHtml(label)}</div><div class="dl-value">${escapeHtml(String(value))}</div></div>`;
   }).join('');
   document.getElementById('modal-content').innerHTML = `
     <h2>${SERVICE_LABELS[row.service_type] || row.service_type}</h2>
