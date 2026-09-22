@@ -48,6 +48,21 @@ async function initDb() {
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS page_views (
+      id SERIAL PRIMARY KEY,
+      session_id TEXT NOT NULL,
+      path TEXT,
+      referrer TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS visitor_sessions (
+      session_id TEXT PRIMARY KEY,
+      last_seen TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
   const existing = await pool.query('SELECT id FROM admin_config WHERE id = 1');
   if (existing.rows.length === 0) {
     const initialPassword = process.env.ADMIN_INITIAL_PASSWORD || 'ChangeMe123!';
@@ -88,6 +103,60 @@ async function notifyNewSubmission(serviceType, data) {
     console.error('email 通知寄送失敗（資料仍已存入後台，不影響送出結果）：', e.message);
   }
 }
+
+/* =========================================================
+   公開 API：訪客計數（頁面瀏覽 + 在線心跳，不需要登入）
+========================================================= */
+function classifyReferrer(referrer) {
+  if (!referrer) return '直接輸入網址或書籤';
+  try {
+    const host = new URL(referrer).hostname.toLowerCase();
+    if (host.includes('google.')) return 'Google 搜尋';
+    if (host.includes('line.me') || host.includes('lin.ee')) return 'LINE';
+    if (host.includes('facebook.') || host.includes('fb.')) return 'Facebook';
+    if (host.includes('instagram.')) return 'Instagram';
+    if (host.includes('bing.')) return 'Bing 搜尋';
+    if (host.includes('yahoo.')) return 'Yahoo';
+    return '其他網站（' + host + '）';
+  } catch (e) {
+    return '其他來源';
+  }
+}
+
+app.post('/api/track', async (req, res) => {
+  try {
+    const { sessionId, path: pagePath, referrer } = req.body || {};
+    if (!sessionId) return res.status(400).json({ error: '缺少 sessionId' });
+    await pool.query(
+      'INSERT INTO page_views (session_id, path, referrer) VALUES ($1, $2, $3)',
+      [sessionId, pagePath || '/', referrer || null]
+    );
+    await pool.query(
+      `INSERT INTO visitor_sessions (session_id, last_seen) VALUES ($1, NOW())
+       ON CONFLICT (session_id) DO UPDATE SET last_seen = NOW()`,
+      [sessionId]
+    );
+    res.json({ success: true });
+  } catch (e) {
+    // 計數失敗不影響網站正常使用，安靜略過即可
+    res.json({ success: false });
+  }
+});
+
+app.post('/api/heartbeat', async (req, res) => {
+  try {
+    const { sessionId } = req.body || {};
+    if (!sessionId) return res.status(400).json({ error: '缺少 sessionId' });
+    await pool.query(
+      `INSERT INTO visitor_sessions (session_id, last_seen) VALUES ($1, NOW())
+       ON CONFLICT (session_id) DO UPDATE SET last_seen = NOW()`,
+      [sessionId]
+    );
+    res.json({ success: true });
+  } catch (e) {
+    res.json({ success: false });
+  }
+});
 
 /* =========================================================
    公開 API：表單送出
@@ -186,6 +255,37 @@ app.delete('/api/admin/submissions/:id', requireAdmin, async (req, res) => {
   } catch (e) {
     console.error('刪除失敗', e);
     res.status(500).json({ error: '刪除失敗' });
+  }
+});
+
+app.get('/api/admin/analytics', requireAdmin, async (req, res) => {
+  try {
+    const [totalRes, todayRes, onlineRes, referrerRes] = await Promise.all([
+      pool.query('SELECT COUNT(*)::int AS count FROM page_views'),
+      pool.query(`SELECT COUNT(*)::int AS count FROM page_views WHERE created_at >= date_trunc('day', NOW())`),
+      pool.query(`SELECT COUNT(*)::int AS count FROM visitor_sessions WHERE last_seen >= NOW() - INTERVAL '60 seconds'`),
+      pool.query('SELECT referrer FROM page_views')
+    ]);
+
+    const referrerCounts = {};
+    referrerRes.rows.forEach(row => {
+      const label = classifyReferrer(row.referrer);
+      referrerCounts[label] = (referrerCounts[label] || 0) + 1;
+    });
+    const referrers = Object.entries(referrerCounts)
+      .map(([label, count]) => ({ label, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    res.json({
+      totalViews: totalRes.rows[0].count,
+      todayViews: todayRes.rows[0].count,
+      onlineCount: onlineRes.rows[0].count,
+      referrers
+    });
+  } catch (e) {
+    console.error('讀取統計失敗', e);
+    res.status(500).json({ error: '讀取統計失敗' });
   }
 });
 
