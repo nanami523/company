@@ -568,10 +568,17 @@
     sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
     sessionStorage.setItem('kcs_session_id', sessionId);
   }
+  const params = new URLSearchParams(location.search);
+  const utmSource = params.get('utm_source') || '';
+  const utmCampaign = params.get('utm_campaign') || '';
+
   fetch('/api/track', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sessionId, path: location.pathname, referrer: document.referrer || '' })
+    body: JSON.stringify({
+      sessionId, path: location.pathname, referrer: document.referrer || '',
+      utmSource, utmCampaign
+    })
   }).catch(()=>{});
 
   function heartbeat(){
