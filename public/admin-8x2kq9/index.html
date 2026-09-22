@@ -103,6 +103,9 @@
   .referrer-row-top .rr-count{ color:var(--ink-soft); }
   .referrer-bar-track{ background:#f0ede4; border-radius:99px; height:8px; overflow:hidden; }
   .referrer-bar-fill{ background:var(--accent); height:100%; border-radius:99px; }
+  #trend-chart{ margin-top:12px; }
+  #trend-chart svg{ width:100%; height:auto; display:block; }
+  .trend-tooltip{ font-size:11px; fill:var(--ink-soft); }
 </style>
 </head>
 <body>
@@ -162,6 +165,15 @@
           <div class="stat-value" id="stat-total">—</div>
         </div>
       </div>
+
+      <div class="referrer-panel" style="margin-bottom:16px;">
+        <div class="referrer-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>近 30 天造訪趨勢</span>
+          <button class="btn btn-ghost" id="btn-export-csv" style="font-size:12px;padding:6px 12px;">📥 下載月報表 (CSV)</button>
+        </div>
+        <div id="trend-chart"></div>
+      </div>
+
       <div class="referrer-panel">
         <div class="referrer-title">訪客來源比例</div>
         <div id="referrer-list"></div>
@@ -235,7 +247,73 @@ async function loadAnalytics(){
   }catch(e){
     console.error('讀取統計失敗', e);
   }
+  loadTrend();
 }
+
+async function loadTrend(){
+  try{
+    const res = await fetch('/api/admin/analytics/daily?days=30', { headers:{ Authorization: 'Bearer ' + token } });
+    if(res.status === 401) return;
+    const body = await res.json();
+    if(!res.ok) throw new Error(body.error || '讀取失敗');
+    renderTrendChart(body.series);
+  }catch(e){
+    console.error('讀取趨勢失敗', e);
+  }
+}
+
+function renderTrendChart(series){
+  const container = document.getElementById('trend-chart');
+  if(!series || !series.length){
+    container.innerHTML = '<div class="empty-state" style="padding:20px 0;">目前還沒有足夠的資料</div>';
+    return;
+  }
+  const W = 720, H = 200, padL = 34, padR = 12, padT = 14, padB = 28;
+  const maxVal = Math.max(1, ...series.map(p => p.count));
+  const stepX = (W - padL - padR) / Math.max(1, series.length - 1);
+  const scaleY = v => H - padB - (v / maxVal) * (H - padT - padB);
+  const points = series.map((p, i) => `${padL + i * stepX},${scaleY(p.count)}`).join(' ');
+
+  // 只挑幾個日期標籤顯示，避免 30 個全部擠在一起
+  const labelEvery = Math.ceil(series.length / 6);
+  const xLabels = series.map((p, i) => {
+    if(i % labelEvery !== 0 && i !== series.length - 1) return '';
+    const shortDate = p.date.slice(5).replace('-', '/');
+    return `<text class="trend-tooltip" x="${padL + i * stepX}" y="${H - 8}" text-anchor="middle">${shortDate}</text>`;
+  }).join('');
+
+  const dots = series.map((p, i) => `<circle cx="${padL + i * stepX}" cy="${scaleY(p.count)}" r="2.5" fill="#1f6f5c"><title>${p.date}：${p.count} 次</title></circle>`).join('');
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+      <line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="#e4ddce" />
+      <polyline points="${points}" fill="none" stroke="#1f6f5c" stroke-width="2" />
+      ${dots}
+      ${xLabels}
+      <text class="trend-tooltip" x="${padL}" y="${padT}">${maxVal}</text>
+      <text class="trend-tooltip" x="${padL}" y="${H-padB}">0</text>
+    </svg>
+  `;
+}
+
+document.getElementById('btn-export-csv').addEventListener('click', async ()=>{
+  try{
+    const res = await fetch('/api/admin/analytics/export', { headers:{ Authorization: 'Bearer ' + token } });
+    if(!res.ok) throw new Error('匯出失敗');
+    const csvText = await res.text();
+    const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'visitor-report.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }catch(e){
+    alert('下載報表失敗，請稍後再試一次');
+  }
+});
 
 document.getElementById('btn-login').addEventListener('click', doLogin);
 document.getElementById('login-password').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
