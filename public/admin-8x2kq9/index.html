@@ -300,8 +300,7 @@ document.getElementById('btn-export-csv').addEventListener('click', async ()=>{
   try{
     const res = await fetch('/api/admin/analytics/export', { headers:{ Authorization: 'Bearer ' + token } });
     if(!res.ok) throw new Error('匯出失敗');
-    const csvText = await res.text();
-    const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+    const blob = await res.blob(); // 直接拿原始檔案內容，避免文字轉換過程把編碼記號弄丟
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
