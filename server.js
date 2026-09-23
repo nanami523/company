@@ -133,7 +133,8 @@ const UTM_SOURCE_LABELS = {
   fb_post: 'Facebook 粉專貼文',
   fb_group: 'Facebook 社團分享',
   dm_qr: 'DM文宣 QR code',
-  line_oa: '官方LINE自動回覆'
+  line_oa: '官方LINE自動回覆',
+  direct_msg: '我們傳給企業的訊息連結'
 };
 function classifySource(referrer, utmSource) {
   if (utmSource) {
