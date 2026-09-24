@@ -104,6 +104,7 @@
     background:var(--highlight); border:1px solid var(--highlight-border); border-radius:8px;
     padding:8px 12px; font-size:12.5px; color:#7a4c0a; font-weight:700; margin-top:8px; display:inline-block;
   }
+  .dark-red{ color:#8b1e1e; }
 
   .panel{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:26px; margin-bottom:20px; box-shadow:var(--shadow); }
   .section-label{ font-size:12px; letter-spacing:1px; color:var(--gold); font-weight:800; margin:24px 0 10px; text-transform:uppercase; }
@@ -397,9 +398,9 @@
         <input type="radio" name="joint-eventType" value="小型聯合徵才">
         <div class="rt">🏢 小型聯合徵才</div>
        <div class="rd">
-  場地限定 5～6 間廠商，地點於基隆市銀髮人才服務據點
+  場地限定 5～6 間廠商，地點於基隆市銀髮人才服務據點<br>
   <span class="dark-red">
-    (本年度僅剩 10/20(二)、11/17(二)最後兩場，名額有限、機會難得！
+    (本年度僅剩 10/20(二)、11/17(二)最後兩場，名額有限、機會難得！<br>
     歡迎有徵才需求的企業把握機會，立即報名參加！)
   </span>
 </div>
@@ -408,7 +409,7 @@
         <input type="radio" name="joint-eventType" value="大型聯合徵才（年度活動，本年度已圓滿落幕，可預約明年度）">
         <div class="rt">🎪 大型聯合徵才</div>
       <div class="rd">
-  一年一度活動，場地限定 10～12 間
+  一年一度活動，場地限定 10～12 間<br>
   <span class="dark-red">
     （本年度已圓滿落幕，可預約明年度）
   </span>
@@ -438,7 +439,14 @@
     <div class="field"><label>聯絡地址</label><input type="text" required data-field="companyAddress" data-label="聯絡地址"></div>
     <div class="field">
       <label>需求月份及日期</label>
-      <input type="text" required data-field="preferredDate" data-label="需求月份及日期" placeholder="例如：希望安排於今年10/20、11/17(請於登記月前1個月報名)">
+      <input type="text" required data-field="preferredDate" data-label="需求月份及日期" id="joint-preferredDate" placeholder="例如：希望安排於明年3月(請於登記月前1個月報名)">
+    </div>
+    <div class="field" id="joint-session-dates-wrap">
+      <label>指定場次 <span class="opt">(可複選，僅小型聯合徵才適用)</span></label>
+      <div class="checkbox-list" data-field="sessionDates" data-label="指定場次" data-type="checkbox-group">
+        <label><input type="checkbox" name="joint-sessionDates" value="2026/10/20(二)聯合徵才"> 我要參加 2026/10/20(二) 聯合徵才</label>
+        <label><input type="checkbox" name="joint-sessionDates" value="2026/11/17(二)聯合徵才"> 我要參加 2026/11/17(二) 聯合徵才</label>
+      </div>
     </div>
 
     <div class="actions-bar">
@@ -628,7 +636,11 @@ document.querySelectorAll('[data-goto]').forEach(el=>{
   el.addEventListener('click', ()=> goto(el.dataset.goto));
 });
 
-/* ---------- 聯合徵才：依活動類型切換對應影片 ---------- */
+/* ---------- 聯合徵才：依活動類型切換對應影片、需求月份提示文字、指定場次勾選 ---------- */
+const PREFERRED_DATE_PLACEHOLDER = {
+  small: '例如：希望安排於明年3月(請於登記月前1個月報名)',
+  large: '例如：希望於 11 月中旬安排(請於登記月前1個月報名)'
+};
 document.querySelectorAll('input[name="joint-eventType"]').forEach(r=>{
   r.addEventListener('change', ()=>{
     const smallChecked = document.querySelector('input[name="joint-eventType"][value^="小型"]').checked;
@@ -636,8 +648,19 @@ document.querySelectorAll('input[name="joint-eventType"]').forEach(r=>{
     document.getElementById('joint-video-small').style.display = smallChecked ? 'block' : 'none';
     document.getElementById('joint-video-large').style.display = largeChecked ? 'block' : 'none';
     document.getElementById('joint-video-hint').style.display = (smallChecked || largeChecked) ? 'none' : 'block';
+
+    const dateInput = document.getElementById('joint-preferredDate');
+    dateInput.placeholder = smallChecked ? PREFERRED_DATE_PLACEHOLDER.small : PREFERRED_DATE_PLACEHOLDER.large;
+
+    const sessionWrap = document.getElementById('joint-session-dates-wrap');
+    sessionWrap.style.display = smallChecked ? 'block' : 'none';
+    if(!smallChecked){
+      // 選了大型徵才時，指定場次跟小型徵才無關，清空避免誤送出
+      sessionWrap.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    }
   });
 });
+document.getElementById('joint-session-dates-wrap').style.display = 'none';
 
 /* ============================================================
    台灣縣市／行政區資料（用於即時求才媒合的工作地點選單）
